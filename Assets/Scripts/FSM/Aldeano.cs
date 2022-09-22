@@ -10,15 +10,21 @@ public class EntityStats
     [ReadOnly] public float goldAmount;
     public float maxAmount;
     public float tiempohastaaburrirse;
+    public float timepoHastaDescanso;
 }
 
 
 public class Aldeano : MonoBehaviour
 {
+    [ReadOnly][SerializeField] public int ID;
+    [ReadOnly][SerializeField] private static int Cuantity;
+
     [SerializeField] private EntityStats stats = new EntityStats();
     [ReadOnly][SerializeField] private CentroUrbano m_home;
     [ReadOnly][SerializeField] private States currentState;
     [ReadOnly][SerializeField] private States LastState;
+    [ReadOnly][SerializeField] private Flags lastFlag;
+    [SerializeField] private AldeanoData nombre;
 
     private Mine mine;
     private FiniteStateMachine finiteStateMachine;
@@ -28,6 +34,8 @@ public class Aldeano : MonoBehaviour
     {
         SetFsm();
         m_home = centroUrbano;
+        nombre.Init(Cuantity);
+        Cuantity++;
     }
 
     private void Update()
@@ -74,14 +82,32 @@ public class Aldeano : MonoBehaviour
 
         //setear la accion al iddle.
         finiteStateMachine.AddBehaviour(States.Idle, IddleBehaviour , () => { Debug.Log("estoy Idle"); }, () => { Debug.Log("ya no estoy Idle"); });
-       
+
+        //setear la accion al descansar.
+        finiteStateMachine.AddBehaviour(States.Resting, RestingBehaviour, () => { Debug.Log("Comenzo el descanso"); },()=> { Debug.Log("termino el descanso"); });
+
         //-----Relations-Force------
-       
-       finiteStateMachine.SetRelation(States.Idle, Flags.ForceToPosition, States.ForceGoingToPosition);
-       finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToPosition, States.ForceGoingToPosition);
-       finiteStateMachine.SetRelation(States.GoingToHome, Flags.ForceToPosition, States.ForceGoingToPosition);
-       finiteStateMachine.SetRelation(States.Depositing, Flags.ForceToPosition, States.ForceGoingToPosition);
+
+        finiteStateMachine.SetRelation(States.Idle, Flags.ForceToPosition, States.ForceGoingToPosition);
+        finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToPosition, States.ForceGoingToPosition);
+        finiteStateMachine.SetRelation(States.GoingToHome, Flags.ForceToPosition, States.ForceGoingToPosition);
+        finiteStateMachine.SetRelation(States.Depositing, Flags.ForceToPosition, States.ForceGoingToPosition);
         finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToIdle, States.Idle);
+
+        for (int i = 0; i < (int)States._Count; i++)
+        {
+            finiteStateMachine.SetRelation((States)i, Flags.OnTired, States.Resting);
+        }
+
+        for (int i = 0; i < (int)States._Count; i++)
+        {
+            finiteStateMachine.SetRelation((States)i, Flags.ForceToIdle, States.Idle);
+        }
+
+        finiteStateMachine.SetRelation(States.Resting, Flags.OnFullInventory, States.GoingToHome);
+        finiteStateMachine.SetRelation(States.Resting, Flags.OnGoToMine, States.GoingToMine);
+        finiteStateMachine.SetRelation(States.Resting, Flags.OnReachResource, States.Minig);
+        //finiteStateMachine.SetRelation(States.Resting, Flags.on, States.GoingToMine);
 
         //-----Behaviours-Forced---
 
@@ -89,11 +115,25 @@ public class Aldeano : MonoBehaviour
     }
     public void ForceToStop()
     {
-        finiteStateMachine.SetRelation(States.Idle, Flags.OnGoToMine, States.GoingToMine);
+        finiteStateMachine.SetRelation(States.Idle, lastFlag, States.GoingToMine);
     }
     public void ForceToWork()
     {
         finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+        lastFlag = Flags.OnGoToMine;
+    }
+
+    public void RestingBehaviour()
+    {
+        if (currentActionTime < stats.timepoHastaDescanso)
+        {
+            currentActionTime += Time.deltaTime;
+        }
+        else
+        {
+            currentActionTime = 0;
+            finiteStateMachine.SetFlag(ref currentState, lastFlag);
+        }
     }
 
     public void IddleBehaviour()
@@ -101,17 +141,18 @@ public class Aldeano : MonoBehaviour
         if (mine)
         {
             finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+            lastFlag = Flags.OnGoToMine;
             return;
         }
         if (currentActionTime < stats.tiempohastaaburrirse)
         {
             currentActionTime += Time.deltaTime;
-            Debug.Log("porque existo sin proposito?");
         }
         else
         {
             currentActionTime = 0;
             finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+            lastFlag = Flags.OnGoToMine;
         }
     }
 
@@ -128,9 +169,11 @@ public class Aldeano : MonoBehaviour
             if (stats.goldAmount>0)
             {
                 finiteStateMachine.SetFlag(ref currentState, Flags.OnReachWithResource);
+                lastFlag = Flags.OnReachWithResource;
                 return;
             }
             finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
+            lastFlag = Flags.ForceToIdle;
         }
     }
 
@@ -142,6 +185,7 @@ public class Aldeano : MonoBehaviour
             if (mine==null)
             {
                 finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
+                lastFlag = Flags.ForceToIdle;
             }
         }
         else
@@ -150,6 +194,7 @@ public class Aldeano : MonoBehaviour
             if (Vector3.Distance(localmine, transform.position) < 0.5f)
             {
                 finiteStateMachine.SetFlag(ref currentState, Flags.OnReachResource);
+                lastFlag = Flags.OnReachResource;
                 return;
             }
             else
@@ -180,6 +225,7 @@ public class Aldeano : MonoBehaviour
                 if (v == 0)
                 {
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnFullInventory);
+                    lastFlag = Flags.OnFullInventory;
                 }
                 stats.goldAmount += v;
             }
@@ -188,6 +234,7 @@ public class Aldeano : MonoBehaviour
             {
                 stats.goldAmount = stats.maxAmount;
                 finiteStateMachine.SetFlag(ref currentState, Flags.OnFullInventory);
+                lastFlag = Flags.OnFullInventory;
             }
         }
     }
@@ -196,7 +243,8 @@ public class Aldeano : MonoBehaviour
     {
         m_home.Gold += stats.goldAmount;
         stats.goldAmount = 0;
-          finiteStateMachine.SetFlag(ref currentState, Flags.OnEmptyInventory);
+        finiteStateMachine.SetFlag(ref currentState, Flags.OnEmptyInventory);
+        lastFlag = Flags.OnEmptyInventory;
         Debug.Log("se deposito y tengo inventario vacio");
     }
 

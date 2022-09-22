@@ -71,5 +71,11 @@ public class CentroUrbano : MonoBehaviour
         m_minitas.Remove(mine);
         Destroy(mine.gameObject);
     }
-
+    public void Descansar()
+    {
+        for (int i = 0; i < aldeanos.Count; i++)
+        {
+            aldeanos[i].SetFlag(Flags.OnTired);
+        }
+    }
 }
