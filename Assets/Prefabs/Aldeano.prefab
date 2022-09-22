@@ -373,4 +373,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fcb497072d12a1469443f673c8c2994, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tag: {fileID: 5572029565960997901}
+  NombreBichito: {fileID: 5572029565960997901}

@@ -825,7 +825,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1735180966}
         m_TargetAssemblyTypeName: CentroUrbano, Assembly-CSharp
-        m_MethodName: SpawnAldeano
+        m_MethodName: Alerta
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -30,6 +30,7 @@ public enum Flags
     OnGoToMine,
     OnEmptyInventory,
     OnTired,
+    OnAlert,
 
     ForceToWork,
     ForceToPosition,

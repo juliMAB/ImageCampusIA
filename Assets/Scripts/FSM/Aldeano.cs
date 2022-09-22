@@ -86,6 +86,7 @@ public class Aldeano : MonoBehaviour
         //setear la accion al descansar.
         finiteStateMachine.AddBehaviour(States.Resting, RestingBehaviour, () => { Debug.Log("Comenzo el descanso"); },()=> { Debug.Log("termino el descanso"); });
 
+        finiteStateMachine.AddBehaviour(States.ForceGoingToHome, ForceGoingToHomeBehaviour, () => { Debug.Log("Me vuelvo corriendo a casa"); }, () => { Debug.Log("ta bien"); });
         //-----Relations-Force------
 
         finiteStateMachine.SetRelation(States.Idle, Flags.ForceToPosition, States.ForceGoingToPosition);
@@ -94,24 +95,33 @@ public class Aldeano : MonoBehaviour
         finiteStateMachine.SetRelation(States.Depositing, Flags.ForceToPosition, States.ForceGoingToPosition);
         finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToIdle, States.Idle);
 
+        //va de cualquier estado a descansar (en Tired).
         for (int i = 0; i < (int)States._Count; i++)
         {
             finiteStateMachine.SetRelation((States)i, Flags.OnTired, States.Resting);
         }
-
+        //va de cualquier estado a iddle (en forceidle).
         for (int i = 0; i < (int)States._Count; i++)
         {
             finiteStateMachine.SetRelation((States)i, Flags.ForceToIdle, States.Idle);
         }
+        //va de cualquier estado a ir a casa (en alerta).
+        for (int i = 0; i < (int)States._Count; i++)
+        {
+            finiteStateMachine.SetRelation((States)i, Flags.OnAlert, States.ForceGoingToHome);
+        }
+        
+        finiteStateMachine.SetRelation(States.ForceGoingToHome, Flags.OnGoToMine, States.GoingToMine);
+
 
         finiteStateMachine.SetRelation(States.Resting, Flags.OnFullInventory, States.GoingToHome);
         finiteStateMachine.SetRelation(States.Resting, Flags.OnGoToMine, States.GoingToMine);
         finiteStateMachine.SetRelation(States.Resting, Flags.OnReachResource, States.Minig);
-        //finiteStateMachine.SetRelation(States.Resting, Flags.on, States.GoingToMine);
+    }
 
-        //-----Behaviours-Forced---
-
-        //finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
+    public void ForceGoingToHomeBehaviour()
+    {
+        GoingToHomeBehaviour();
     }
     public void ForceToStop()
     {
@@ -210,6 +220,8 @@ public class Aldeano : MonoBehaviour
 
     private void MiningBehaviour()
     {
+        if (!mine)
+            finiteStateMachine.SetFlag(ref currentState, Flags.OnFullInventory);
         if (currentActionTime < stats.minigSpeed)
         {
             currentActionTime += Time.deltaTime;

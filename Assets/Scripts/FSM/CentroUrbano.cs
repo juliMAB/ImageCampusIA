@@ -78,4 +78,12 @@ public class CentroUrbano : MonoBehaviour
             aldeanos[i].SetFlag(Flags.OnTired);
         }
     }
+    public void Alerta()
+    {
+        for (int i = 0; i < aldeanos.Count; i++)
+        {
+            aldeanos[i].SetFlag(Flags.OnAlert);
+        }
+    }
+
 }
