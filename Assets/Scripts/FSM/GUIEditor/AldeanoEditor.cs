@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using FSM;
 
 [CustomEditor(typeof(Aldeano))]
 public class AldeanoEditor : Editor

@@ -47,105 +47,111 @@ public class State
     public Action OnExitBehaviour;
 }
 
-public class FiniteStateMachine
+namespace FSM
 {
-    private States[,] relations;
-    private Dictionary<States, State> behaviours;
 
-    public void ResetRelations()
+
+    public class FiniteStateMachine
     {
-        relations = new States[(int)States._Count, (int)Flags._Count];
-        for (int i = 0; i < (int)States._Count; i++)
-            for (int j = 0; j < (int)Flags._Count; j++)
-                relations[i, j] = States.Undefined;
+        private States[,] relations;
+        private Dictionary<States, State> behaviours;
 
-        behaviours = new Dictionary<States, State>();
-    }
-
-    public FiniteStateMachine()
-    {
-        ResetRelations();
-    }
-
-    public void SetRelation(States sourceState, Flags flag, States destinationState)
-    {
-        if (relations[(int)sourceState, (int)flag] == States.Undefined)
-        relations[(int)sourceState, (int)flag] = destinationState;
-    }
-
-    public void SetFlag(ref States currentState, Flags flag)
-    {
-        if (relations[(int)currentState, (int)flag] != States.Undefined)
-            currentState = relations[(int)currentState, (int)flag];
-        else
-        Debug.Log(Enum.GetName(typeof(States),currentState) + " + " + Enum.GetName(typeof(Flags), flag) + " no tienen relacion");
-    }
-
-    public void SetBehaviour(States state, Action behaviour, Action onEntryBehaviour = null, Action onExitBehaviour = null)
-    {
-        State newState = new State();
-        newState.behaviours = new List<Action>();
-        newState.behaviours.Add(behaviour);
-        newState.OnEntryBehaviour = onEntryBehaviour;
-        newState.OnExitBehaviour = onExitBehaviour;
-
-        if (behaviours.ContainsKey(state))
-            behaviours[state] = newState;
-        else
-            behaviours.Add(state, newState);
-    }
-
-    public void AddBehaviour(States state, Action behaviour, Action onEntryBehaviour = null, Action onExitBehaviour = null)
-    {
-        if (behaviours.ContainsKey(state))
+        public void ResetRelations()
         {
-            if (!behaviours[state].behaviours.Any(p => p == behaviour)) // no meter el action 2 veces.
-            {
-                behaviours[state].behaviours.Add(behaviour);
+            relations = new States[(int)States._Count, (int)Flags._Count];
+            for (int i = 0; i < (int)States._Count; i++)
+                for (int j = 0; j < (int)Flags._Count; j++)
+                    relations[i, j] = States.Undefined;
 
-            }
-
+            behaviours = new Dictionary<States, State>();
         }
-        else
+
+        public FiniteStateMachine()
+        {
+            ResetRelations();
+        }
+
+        public void SetRelation(States sourceState, Flags flag, States destinationState)
+        {
+            if (relations[(int)sourceState, (int)flag] == States.Undefined)
+                relations[(int)sourceState, (int)flag] = destinationState;
+        }
+
+        public void SetFlag(ref States currentState, Flags flag)
+        {
+            if (relations[(int)currentState, (int)flag] != States.Undefined)
+                currentState = relations[(int)currentState, (int)flag];
+            else
+                Debug.Log(Enum.GetName(typeof(States), currentState) + " + " + Enum.GetName(typeof(Flags), flag) + " no tienen relacion");
+        }
+
+        public void SetBehaviour(States state, Action behaviour, Action onEntryBehaviour = null, Action onExitBehaviour = null)
         {
             State newState = new State();
             newState.behaviours = new List<Action>();
             newState.behaviours.Add(behaviour);
             newState.OnEntryBehaviour = onEntryBehaviour;
             newState.OnExitBehaviour = onExitBehaviour;
-            behaviours.Add(state, newState);
+
+            if (behaviours.ContainsKey(state))
+                behaviours[state] = newState;
+            else
+                behaviours.Add(state, newState);
+        }
+
+        public void AddBehaviour(States state, Action behaviour, Action onEntryBehaviour = null, Action onExitBehaviour = null)
+        {
+            if (behaviours.ContainsKey(state))
+            {
+                if (!behaviours[state].behaviours.Any(p => p == behaviour)) // no meter el action 2 veces.
+                {
+                    behaviours[state].behaviours.Add(behaviour);
+
+                }
+
+            }
+            else
+            {
+                State newState = new State();
+                newState.behaviours = new List<Action>();
+                newState.behaviours.Add(behaviour);
+                newState.OnEntryBehaviour = onEntryBehaviour;
+                newState.OnExitBehaviour = onExitBehaviour;
+                behaviours.Add(state, newState);
+            }
+        }
+
+        public void Update(ref States currentState, ref States lastState)
+        {
+            if (lastState != currentState)
+            {
+                if (behaviours.ContainsKey(lastState))
+                {
+                    Action OnExit = behaviours[lastState].OnExitBehaviour;
+                    if (OnExit != null)
+                    {
+                        OnExit?.Invoke();
+                    }
+                }
+                lastState = currentState;
+                if (behaviours.ContainsKey(currentState))
+                {
+                    Action OnEntry = behaviours[currentState].OnEntryBehaviour;
+                    if (OnEntry != null)
+                    {
+                        OnEntry?.Invoke();
+                    }
+                }
+            }
+            if (behaviours.ContainsKey(currentState))
+            {
+                List<Action> actions = behaviours[currentState].behaviours;
+                if (actions != null)
+                    for (int i = 0; i < actions.Count; i++)
+                        if (actions[i] != null)
+                            actions[i].Invoke();
+            }
         }
     }
 
-    public void Update(ref States currentState, ref States lastState)
-    {
-        if(lastState != currentState)
-        {
-            if (behaviours.ContainsKey(lastState))
-            {
-                Action OnExit = behaviours[lastState].OnExitBehaviour;
-                if (OnExit != null)
-                {
-                    OnExit?.Invoke();
-                }
-            }
-            lastState = currentState;
-            if (behaviours.ContainsKey(currentState))
-            {
-                Action OnEntry = behaviours[currentState].OnEntryBehaviour;
-                if (OnEntry!=null)
-                {
-                    OnEntry?.Invoke();
-                }
-            }
-        }
-        if (behaviours.ContainsKey(currentState))
-        {
-            List<Action> actions = behaviours[currentState].behaviours;
-            if (actions != null)
-                for (int i = 0; i < actions.Count; i++)
-                    if (actions[i] != null)
-                        actions[i].Invoke();
-        }
-    }
 }
