@@ -47,7 +47,7 @@ public class LinearFunction
                 return float.PositiveInfinity;
             }
             else
-                return -b.moveX;
+                return -a.moveX;
         }
         else
         {
@@ -110,17 +110,53 @@ public class LinearFunction
     {
         slope = GetSlope(p1, p2);
         Vector3 mp = GetMidPoint(p1, p2);
-        moveX = -mp.x;
-        moveY = -mp.y;
+        if (slope==0)
+            slope = float.NaN;
 
+        if (float.IsInfinity(slope))
+        {
+            moveY = 0;
+            moveX = -mp.x;
+            return;
+        }
+        else if (float.IsNaN(slope))
+        {
+            moveY = -mp.y;
+            moveX = 0;
+            return;
+        }
+        else
+        {
+            moveX = -mp.x;
+            moveY = -mp.y;
+            return;
+        }
     }
     public LinearFunction(float slop, Vector3 midpoint)
     {
         slope = slop;
         Vector3 mp = midpoint;
-        moveX = -mp.x;
-        moveY = -mp.y;
+        if (slope == 0)
+            slope = float.NaN;
 
+        if (float.IsInfinity (slop))
+        {
+            moveY = 0;
+            moveX = -mp.x;
+            return;
+        }
+        else if(float.IsNaN(slope))
+        {
+            moveY = -mp.y;
+            moveX = 0;
+            return;
+        }
+        else
+        {
+            moveX = -mp.x;
+            moveY = -mp.y;
+            return;
+        }
     }
     public static Vector3 PreguntarSiSeCortan(Edge a, Edge b)
     {
@@ -215,13 +251,32 @@ public class LinearFunction
     public static bool PreguntarSiSeCortan(Vector3 a, Edge b)
     {
         LinearFunction functionB = new LinearFunction(b.origin.pos, b.destination.pos);
-        float x = functionB.GetX(a.y);
-        return x == a.x;
+        if (float.IsNaN(functionB.slope))
+        {
+            if (a.y != -functionB.moveY)
+                return false;
+            return true;
+        }
+        if (float.IsInfinity(functionB.slope))
+        {
+            if (a.x != -functionB.moveX)
+                return false;
+            return true;
+        }
+        if (!(float.IsNaN(functionB.slope)) && !(float.IsInfinity(functionB.slope)))
+        {
+            float x = functionB.GetX(a.y);
+            return x == a.x;
+        }
+        return false;
+
+
     }
+    /// <summary>
+    /// Preguntar siempre que sea diferente de nan y infinito.
+    /// </summary>
     public float GetX(float y)
     {
-        if (float.IsInfinity(slope))
-            return moveX;
         return (y - ((slope * (moveX + moveY))) / slope);
     }
 
