@@ -2,17 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEditor;
+using Unity.VisualScripting;
+using FSM2;
+using static UnityEngine.UI.Image;
 
-namespace FSM
+namespace FSM2
 {
 
-    public class CentroUrbano : MonoBehaviour
+    public class CentroUrbano2 : MonoBehaviour
     {
         [SerializeField] private GameObject m_aldeano;
         [SerializeField] private List<Mine> m_minitas;
         [SerializeField] private GameObject m_pfMina;
 
-        private List<Aldeano> aldeanos = new List<Aldeano>();
+        private List<Aldeano2> aldeanos = new List<Aldeano2>();
+
+        [SerializeField] Level lv;
 
         [SerializeField] private int maxMinitas = 5;
 
@@ -20,12 +26,21 @@ namespace FSM
 
         [SerializeField] private float m_gold;
 
+        [SerializeField] Vector3 newMinaPos;
+
+        private void Start()
+        {
+            m_Limites.xMax = lv.columns;
+            m_Limites.yMax = lv.rows;
+            m_Limites.xMin = 0; 
+            m_Limites.yMin = 0;
+        }
         public float Gold { get => m_gold; set => m_gold = value; }
 
         public void SpawnAldeano()
         {
             GameObject aldeanito = Instantiate(m_aldeano, transform.position, Quaternion.identity, transform);
-            Aldeano aldeanoCs = aldeanito.GetComponent<Aldeano>();
+            Aldeano2 aldeanoCs = aldeanito.GetComponent<Aldeano2>();
             aldeanos.Add(aldeanoCs);
             aldeanoCs.Init(this);
         }
@@ -41,6 +56,7 @@ namespace FSM
             if (maxMinitas == m_minitas.Count)
                 return;
             Vector2Int randPos = Vector2Int.zero;
+            int v1=0;
             int aux = 0;
             do
             {
@@ -51,7 +67,13 @@ namespace FSM
                     continue;
                 }
                 randPos = new Vector2Int(Random.Range((int)m_Limites.xMin, (int)m_Limites.xMax + 1), Random.Range((int)m_Limites.yMin, (int)m_Limites.yMax));
-            } while (m_minitas.Any(p => !ComparePositions(randPos, p.transform.position)) && ComparePositions(randPos, transform.position, 2.0f));
+                v1 = NodeUtils.PositionToIndex(randPos);
+            } while (NodeGenerator.map[v1].weight != 1 && m_minitas.Any(p => !ComparePositions(randPos, p.transform.position)) && ComparePositions(randPos, transform.position, 2.0f));
+
+            
+            
+
+
             Mine mine = Instantiate(m_pfMina, new Vector3(randPos.x, randPos.y), Quaternion.identity, transform).GetComponent<Mine>();
             mine.OnEmpty += DeleteMineReference;
             m_minitas.Add(mine);
@@ -67,6 +89,15 @@ namespace FSM
             return (vec3.x + distance > vec2I.x && vec3.x - distance < vec2I.x) &&
                    (vec3.y + distance > vec2I.y && vec3.y - distance < vec2I.y);
 
+        }
+        public void CreateMinePriv()
+        {
+            if (maxMinitas == m_minitas.Count)
+                return;
+            int aux = 0;
+            Mine mine = Instantiate(m_pfMina, new Vector3(newMinaPos.x, newMinaPos.y), Quaternion.identity, transform).GetComponent<Mine>();
+            mine.OnEmpty += DeleteMineReference;
+            m_minitas.Add(mine);
         }
 
         private void DeleteMineReference(Mine mine)
@@ -91,4 +122,18 @@ namespace FSM
 
     }
 
+}
+
+[CustomEditor(typeof(CentroUrbano2))]
+public class CentroUrbano2Editor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+
+        CentroUrbano2 level = (CentroUrbano2)target;
+
+        if (GUILayout.Button("setGrid"))
+            level.CreateMinePriv();
+    }
 }

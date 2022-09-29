@@ -37,14 +37,18 @@ public class LinearFunction
             {
                 return float.NaN; //nunca se van a cruzar.
             }
-            else
+            if (float.IsInfinity(b.slope))
+            {
                 return -b.moveX;
+            }
+            else
+                return b.GetX(-a.moveY);
         }
         else if (float.IsInfinity(a.slope))
         {
             if (float.IsInfinity(b.slope))
             {
-                return float.PositiveInfinity;
+                return float.PositiveInfinity; // nunca se van a cruzar.
             }
             else
                 return -a.moveX;
@@ -53,14 +57,14 @@ public class LinearFunction
         {
             if (float.IsNaN(b.slope))
             {
-                return float.NaN;
+                return a.GetX (b.moveY);
             }
             if (float.IsInfinity(b.slope))
             {
-                return -a.moveX;
+                return -b.moveX;
             }
             else
-                return ((b.slope * (-b.moveX) + b.moveY) - (a.slope * (-a.moveX) + a.moveY)) / (a.slope - b.slope);
+                return ((b.slope * (b.moveX) + b.moveY) - (a.slope * (a.moveX) + a.moveY)) / (a.slope - b.slope);
         }
         
     }
@@ -92,10 +96,10 @@ public class LinearFunction
             }
             if (float.IsInfinity(b.slope))
             {
-                return -a.moveY;
+                return a.GetY(b.moveX);
             }
             else
-                return (-a.slope * ((b.slope * (-b.moveX) + b.moveY)) + ((a.slope * (-a.moveX) + a.moveY)) * b.slope) / (b.slope - a.slope);
+                return (a.slope * ((b.slope * (-b.moveX) + b.moveY)) + ((a.slope * (-a.moveX) + a.moveY)) * b.slope) / (b.slope - a.slope);
         }
     }
 
@@ -160,65 +164,67 @@ public class LinearFunction
     }
     public static Vector3 PreguntarSiSeCortan(Edge a, Edge b)
     {
-        LinearFunction functionB = new LinearFunction(b.origin.pos, b.destination.pos);
-        LinearFunction functionA = new LinearFunction(a.origin.pos, a.destination.pos);
+        LinearFunction functionB = new LinearFunction(b.origin.pos.pos, b.destination.pos.pos);
+        LinearFunction functionA = new LinearFunction(a.origin.pos.pos, a.destination.pos.pos);
         float x = PreguntarSiSeCortanX(functionA, functionB);
         float y = PreguntarSiSeCortanY(functionA, functionB);
         Rect localLimitB = new Rect();
-        if (b.origin.pos.x < b.destination.pos.x)
+        if (b.origin.pos.pos.x < b.destination.pos.pos.x)
         {
-            localLimitB.xMin = b.origin.pos.x;
-            localLimitB.xMax = b.destination.pos.x;
+            localLimitB.xMin = b.origin.pos.pos.x;
+            localLimitB.xMax = b.destination.pos.pos.x;
         }
         else
         {
-            localLimitB.xMin = b.destination.pos.x;
-            localLimitB.xMax = b.origin.pos.x;
+            localLimitB.xMin = b.destination.pos.pos.x;
+            localLimitB.xMax = b.origin.pos.pos.x;
         }
-        if (b.origin.pos.y < b.destination.pos.y)
+        if (b.origin.pos.pos.y < b.destination.pos.pos.y)
         {
-            localLimitB.xMin = b.origin.pos.y;
-            localLimitB.xMax = b.destination.pos.y;
+            localLimitB.yMin = b.origin.pos.pos.y;
+            localLimitB.yMax = b.destination.pos.pos.y;
         }
         else
         {
-            localLimitB.xMin = b.destination.pos.y;
-            localLimitB.xMax = b.origin.pos.y;
+            localLimitB.yMin = b.destination.pos.pos.y;
+            localLimitB.yMax = b.origin.pos.pos.y;
         }
         Rect localLimitA = new Rect();
 
-        if (a.origin.pos.x < a.destination.pos.x)
+        if (a.origin.pos.pos.x < a.destination.pos.pos.x)
         {
-            localLimitA.xMin = a.origin.pos.x;
-            localLimitA.xMax = a.destination.pos.x;
+            localLimitA.xMin = a.origin.pos.pos.x;
+            localLimitA.xMax = a.destination.pos.pos.x;
         }
         else
         {
-            localLimitA.xMin = a.destination.pos.x;
-            localLimitA.xMax = a.origin.pos.x;
+            localLimitA.xMin = a.destination.pos.pos.x;
+            localLimitA.xMax = a.origin.pos.pos.x;
         }
-        if (a.origin.pos.y < a.destination.pos.y)
+        if (a.origin.pos.pos.y < a.destination.pos.pos.y)
         {
-            localLimitA.xMin = a.origin.pos.y;
-            localLimitA.xMax = a.destination.pos.y;
+            localLimitA.yMin = a.origin.pos.pos.y;
+            localLimitA.yMax = a.destination.pos.pos.y;
         }
         else
         {
-            localLimitA.xMin = a.destination.pos.y;
-            localLimitA.xMax = a.origin.pos.y;
+            localLimitA.yMin = a.destination.pos.pos.y;
+            localLimitA.yMax = a.origin.pos.pos.y;
         }
-        if ((localLimitA.xMin >= localLimitB.xMax && localLimitA.xMax >= localLimitB.xMin) && 
-            (localLimitA.yMin >= localLimitB.yMax && localLimitA.yMax >= localLimitB.yMin))
-        {
+
+
+        if (localLimitA.xMax >= localLimitB.xMin &&
+            localLimitB.xMax >= localLimitA.xMin &&
+            localLimitA.yMax >= localLimitB.yMin &&
+            localLimitB.yMax >= localLimitA.yMin)
             return new Vector3(x, y);
-        }
         return new Vector3(float.NaN, float.NaN);
         
     }
 
     public static bool PreguntarSiSeCortan(LinearFunction a, Edge b)
     {
-        LinearFunction functionB = new LinearFunction(b.origin.pos, b.destination.pos);
+        LinearFunction functionB = new LinearFunction(b.origin.pos.pos, b.destination.pos.pos);
         float x = PreguntarSiSeCortanX(a, functionB);
         float y = PreguntarSiSeCortanY(a, functionB);
         if (float.IsNaN(x)||float.IsInfinity(x)||float.IsNaN(y)||float.IsInfinity(y))
@@ -226,11 +232,11 @@ public class LinearFunction
 
         Vector3 cut = new Vector3(x, y);
 
-        float DistanciaEntrePuntos = Vector3.Distance(b.origin.pos, b.destination.pos);
-        float DistanciaACutOrigen = Vector3.Distance(b.origin.pos, cut);
+        float DistanciaEntrePuntos = Vector3.Distance(b.origin.pos.pos, b.destination.pos.pos);
+        float DistanciaACutOrigen = Vector3.Distance(b.origin.pos.pos, cut);
         if (DistanciaEntrePuntos < DistanciaACutOrigen)
             return false;
-        float DistanciaACutDestin = Vector3.Distance(b.destination.pos, cut);
+        float DistanciaACutDestin = Vector3.Distance(b.destination.pos.pos, cut);
         if (DistanciaEntrePuntos < DistanciaACutDestin)
             return false;
         return true;
@@ -238,7 +244,7 @@ public class LinearFunction
 
     public static Vector3 ObtenerPuntoDeCorte(LinearFunction a, Edge b)
     {
-        LinearFunction functionB = new LinearFunction(b.origin.pos, b.destination.pos);
+        LinearFunction functionB = new LinearFunction(b.origin.pos.pos, b.destination.pos.pos);
         float x = PreguntarSiSeCortanX(a, functionB);
         float y = PreguntarSiSeCortanY(a, functionB);
 
@@ -250,7 +256,7 @@ public class LinearFunction
     }
     public static bool PreguntarSiSeCortan(Vector3 a, Edge b)
     {
-        LinearFunction functionB = new LinearFunction(b.origin.pos, b.destination.pos);
+        LinearFunction functionB = new LinearFunction(b.origin.pos.pos, b.destination.pos.pos);
         if (float.IsNaN(functionB.slope))
         {
             if (a.y != -functionB.moveY)
@@ -277,7 +283,22 @@ public class LinearFunction
     /// </summary>
     public float GetX(float y)
     {
-        return (y - ((slope * (moveX + moveY))) / slope);
+        if (float.IsNaN(slope))
+            return float.NaN;
+        else if (float.IsInfinity(slope))
+            return -moveX;
+        else
+            return (y - ((slope * (moveX + moveY))) / slope);
+    }
+
+    public float GetY(float x)
+    {
+        if (float.IsInfinity(slope))
+            return float.PositiveInfinity;
+        else if (float.IsNaN(slope))
+            return -moveY;
+        else
+            return  slope * (x + moveX) - moveY;
     }
 
 }

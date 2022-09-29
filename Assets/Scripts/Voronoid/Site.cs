@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class Site
 {
-    static uint num = 0;
+    public static uint num = 0;
 
     [ReadOnly] public string name;
 

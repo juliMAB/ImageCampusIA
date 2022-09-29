@@ -6,30 +6,41 @@ using UnityEngine;
 [Serializable]
 public class Cell 
 {
-    static uint num = 0;
+    public static uint num = 0;
 
     [ReadOnly] public string name;
 
     public Site Site;
-    public List<Vertice> vertices = new List<Vertice>();
     public List<Edge> edges = new List<Edge>();
+    public List<Vertice> vertices = new List<Vertice>();
     public bool Inside(Vector3 objectToCompare)
     {
         for (int i = 0; i < edges.Count; i++)
         {
-            float slope = LinearFunction.GetSlope(edges[i].origin.pos, edges[i].destination.pos);
-            Vector3 midPoint = LinearFunction.GetMidPoint(edges[i].origin.pos, edges[i].destination.pos);
+            float slope = LinearFunction.GetSlope(edges[i].origin.pos.pos, edges[i].destination.pos.pos);
+            Vector3 midPoint = LinearFunction.GetMidPoint(edges[i].origin.pos.pos, edges[i].destination.pos.pos);
             Vector3 positivemidPoint;
             Vector3 negativemidPoint;
-            if (float.IsNaN(slope))
+            if (float.IsNaN(slope)|| slope==0)
             {
                 positivemidPoint = midPoint + Vector3.up;
                 negativemidPoint = midPoint - Vector3.up;
+
+                if (objectToCompare.y > midPoint.y && Site.pos.pos.y > midPoint.y)
+                    continue;
+                if (objectToCompare.y < midPoint.y && Site.pos.pos.y < midPoint.y)
+                    continue;
+
             }
             else if (float.IsInfinity(slope))
             {
                 positivemidPoint = midPoint + Vector3.right;
                 negativemidPoint = midPoint - Vector3.right;
+
+                if (objectToCompare.x > midPoint.x && Site.pos.pos.x > midPoint.x)
+                    continue;
+                if (objectToCompare.x < midPoint.x && Site.pos.pos.x < midPoint.x)
+                    continue;
             }
             else
             {

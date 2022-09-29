@@ -235,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9365824a3af7943a3656b0ac0abdcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  test: 
   sites: []
   cells: []
   LimitSize: {x: 20, y: 20}
@@ -248,9 +249,35 @@ MonoBehaviour:
   nuevoEdge:
     name: E:6
     origin:
-      pos: {x: 0, y: 0, z: 0}
+      name: 
+      pos:
+        pos: {x: 0, y: 0, z: 0}
     destination:
-      pos: {x: 0, y: 0, z: 0}
+      name: 
+      pos:
+        pos: {x: 0, y: 0, z: 0}
+  posToAdd: {x: 10, y: 10, z: 0}
+  testEdge1:
+    name: E:2
+    origin:
+      name: 
+      pos:
+        pos: {x: 0, y: 0, z: 0}
+    destination:
+      name: 
+      pos:
+        pos: {x: 20, y: 20, z: 0}
+  testEdge2:
+    name: E:3
+    origin:
+      name: 
+      pos:
+        pos: {x: 0, y: 20, z: 0}
+    destination:
+      name: 
+      pos:
+        pos: {x: 20, y: 0, z: 0}
+  testing: 0
 --- !u!1 &1221265735
 GameObject:
   m_ObjectHideFlags: 0

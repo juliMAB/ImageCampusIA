@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class VoronoiDiagram : MonoBehaviour
 {
+    [TextArea(3, 3)]
+    [SerializeField] string test;
     [SerializeField] List<Site> sites = new List<Site>();
     [SerializeField] List<Cell> cells = new List<Cell>();
     [SerializeField] Vector2Int LimitSize;
@@ -17,9 +20,20 @@ public class VoronoiDiagram : MonoBehaviour
 
     [SerializeField] Vector3 posToAdd;
 
+    [SerializeField] Edge testEdge1;
+    [SerializeField] Edge testEdge2;
+
+    [SerializeField] bool testing;
+
     private void OnValidate()
     {
         ResizeLimits();
+    }
+
+    public void TestEdges()
+    {
+        Vector3 v = LinearFunction.PreguntarSiSeCortan(testEdge1, testEdge2);
+        Debug.Log(v);
     }
 
     public void ResizeLimits()
@@ -56,6 +70,10 @@ public class VoronoiDiagram : MonoBehaviour
     {
         sites.Clear();
         cells.Clear();
+        Site.num = 0;
+        Edge.num = 0;
+        Cell.num = 0;
+        Vertice.num = 0;
     }
     public vec3 GetRandomPointOnLimits()
     {
@@ -64,13 +82,14 @@ public class VoronoiDiagram : MonoBehaviour
 
     public void RecalculateVoronoi(Site newSite)
     {
-        nuevoEdge = new Edge();
+        
         Cell newCell = new Cell();
         newCell.Site = newSite;
         for (int i = 0; i < cells.Count; i++)
         {
             if (cells[i].Inside(newSite.pos.pos))
             {
+                nuevoEdge = new Edge();
                 vec3 localSitePos = cells[i].Site.pos;
                 Vector3 midpos = LinearFunction.GetMidPoint(newSite.pos.pos, localSitePos.pos);
                 float slope = LinearFunction.GetSlope(newSite.pos.pos, localSitePos.pos);
@@ -96,91 +115,83 @@ public class VoronoiDiagram : MonoBehaviour
                     Vector3 cutpointBase = LinearFunction.ObtenerPuntoDeCorte(function, cells[i].edges[j]);
                     vec3 cutpoint = new vec3(cutpointBase);
 
-                    if (cutpoint.pos == cells[i].edges[j].origin.pos || cutpoint.pos == cells[i].edges[j].destination.pos)
-                        continue;
-
 
                     if ((!LinearFunction.NanOrInfin(cutpoint.pos)) && PerteneceALimites(cutpoint.pos))
                     {
-                        if (newV1!=null)
+                        if (newV1!=null && newV2 ==null)
                         {
                             if (LinearFunction.PreguntarSiSeCortan(cutpoint.pos, cells[i].edges[j]))
                             {
                                 newV2 = new Vertice(cutpoint);
-                                newCell.vertices.Add(newV2);
-                                cells[i].vertices.Add(newV2);
-                                if (Vector3.Distance(newSite.pos.pos, cells[i].edges[j].origin.pos) < Vector3.Distance(localSitePos.pos, cells[i].edges[j].origin.pos))
+                                if (Vector3.Distance(newSite.pos.pos, cells[i].edges[j].origin.pos.pos) < Vector3.Distance(localSitePos.pos, cells[i].edges[j].origin.pos.pos))
                                 {
-                                    localEdge = new Edge(cells[i].edges[j].destination, newV2.pos);
-                                    main_Edge = new Edge(newV2.pos, cells[i].edges[j].origin);
+                                    localEdge = new Edge(cells[i].edges[j].destination, newV2);
+                                    main_Edge = new Edge(newV2, cells[i].edges[j].origin);
                                     cells[i].edges.Add(localEdge);
                                     newCell.edges.Add(main_Edge);
-                                    var c = cells[i].vertices.Find(x => x.pos == cells[i].edges[j].destination);
-                                    cells[i].vertices.Remove(c);
                                 }
                                 else
                                 {
-                                    localEdge = new Edge(cells[i].edges[j].origin, newV2.pos);
-                                    main_Edge = new Edge(newV2.pos, cells[i].edges[j].destination);
+                                    localEdge = new Edge(cells[i].edges[j].origin, newV2);
+                                    main_Edge = new Edge(newV2, cells[i].edges[j].destination);
                                     cells[i].edges.Add(localEdge);
                                     newCell.edges.Add(main_Edge);
-                                    var c = cells[i].vertices.Find(x => x.pos == cells[i].edges[j].origin);
-                                    cells[i].vertices.Remove(c);
                                 }
                                 cells[i].edges[j] = null;
                             }
                         }
-                        else
+                        if (newV1 == null && newV2 == null)
                         {
                             
 
                             if (LinearFunction.PreguntarSiSeCortan(cutpoint.pos, cells[i].edges[j]))
                             {
                                 newV1 = new Vertice(cutpoint);
-                                newCell.vertices.Add(newV1);
-                                cells[i].vertices.Add(newV1);
-                                if (Vector3.Distance(newSite.pos.pos, cells[i].edges[j].origin.pos) < Vector3.Distance(localSitePos.pos, cells[i].edges[j].origin.pos))
+                                if (Vector3.Distance(newSite.pos.pos, cells[i].edges[j].origin.pos.pos) < Vector3.Distance(localSitePos.pos, cells[i].edges[j].origin.pos.pos))
                                 {
-                                    localEdge = new Edge(cells[i].edges[j].destination, newV1.pos);
-                                    main_Edge = new Edge(newV1.pos, cells[i].edges[j].origin);
+                                    localEdge = new Edge(cells[i].edges[j].destination, newV1);
+                                    main_Edge = new Edge(newV1, cells[i].edges[j].origin);
                                     cells[i].edges.Add(localEdge);
                                     newCell.edges.Add(main_Edge);
-                                    var c = cells[i].vertices.Find(x => x.pos == cells[i].edges[j].destination);
-                                    cells[i].vertices.Remove(c);
                                 }
                                 else
                                 {
-                                    localEdge = new Edge(cells[i].edges[j].origin, newV1.pos);
-                                    main_Edge = new Edge(newV1.pos, cells[i].edges[j].destination);
+                                    localEdge = new Edge(cells[i].edges[j].origin, newV1);
+                                    main_Edge = new Edge(newV1, cells[i].edges[j].destination);
                                     cells[i].edges.Add(localEdge);
                                     newCell.edges.Add(main_Edge);
-                                    var c = cells[i].vertices.Find(x => x.pos == cells[i].edges[j].origin);
-                                    cells[i].vertices.Remove(c);
                                 }
-                                
 
 
                                 cells[i].edges[j] = null;
+
                             }
                         }
                     }
                 }
                 if (newV1!= null && newV2 != null)
                 {
-                    newEdge = new Edge(newV1.pos, newV2.pos);
+                    newEdge = new Edge(newV1, newV2);
                     cells[i].edges.Add(newEdge);
-                    cells[i].vertices.Add(newV1);
-                    cells[i].vertices.Add(newV2);
-                    newCell.vertices.Add(newV1);
-                    newCell.vertices.Add(newV2);
                     newCell.edges.Add(newEdge);
                 }
                 List<Edge> edgetToRemove = new List<Edge>();
+                List<Edge> edgetToRemoveNull = new List<Edge>();
+
+
                 for (int j = 0; j < cells[i].edges.Count; j++)
                 {
-                    if (cells[i].edges[j] == null)
-                        continue;
-                    Vector3 midPoint = LinearFunction.GetMidPoint(cells[i].edges[j].origin.pos, cells[i].edges[j].destination.pos);
+                    if (cells[i].edges[j]!=null)
+                    edgetToRemoveNull.Add(cells[i].edges[j]);
+                }
+                cells[i].edges.Clear();
+                for (int j = 0; j < edgetToRemoveNull.Count; j++)
+                {
+                    cells[i].edges.Add(edgetToRemoveNull[j]);
+                }
+                for (int j = 0; j < cells[i].edges.Count; j++)
+                {
+                    Vector3 midPoint = LinearFunction.GetMidPoint(cells[i].edges[j].origin.pos.pos, cells[i].edges[j].destination.pos.pos);
 
                     if (Vector3.Distance(newCell.Site.pos.pos,midPoint) < Vector3.Distance(localSitePos.pos, midPoint))
                     {
@@ -191,6 +202,44 @@ public class VoronoiDiagram : MonoBehaviour
                 for (int j = 0; j < edgetToRemove.Count; j++)
                 {
                     cells[i].edges.Remove(edgetToRemove[j]);
+                }
+
+                cells[i].vertices.Clear();
+                
+                for (int j = 0; j < cells[i].edges.Count; j++)
+                {
+                    if (cells[i].vertices.Count>0)
+                    {
+                
+                    if(!cells[i].vertices.Any(x => x == cells[i].edges[j].origin))
+                        cells[i].vertices.Add(cells[i].edges[j].origin);
+                
+                    if(!cells[i].vertices.Any(x => x == cells[i].edges[j].destination))
+                        cells[i].vertices.Add(cells[i].edges[j].destination);
+                    }
+                    else
+                    {
+                        cells[i].vertices.Add(cells[i].edges[j].origin);
+                        cells[i].vertices.Add(cells[i].edges[j].destination);
+                    }
+                }
+                newCell.vertices.Clear();
+                for (int j = 0; j < newCell.edges.Count; j++)
+                {
+                    if (newCell.vertices.Count > 0)
+                    {
+
+                        if (!newCell.vertices.Any(x => x == newCell.edges[j].origin))
+                            newCell.vertices.Add(newCell.edges[j].origin);
+
+                        if (!newCell.vertices.Any(x => x == newCell.edges[j].destination))
+                            newCell.vertices.Add(newCell.edges[j].destination);
+                    }
+                    else
+                    {
+                        newCell.vertices.Add(newCell.edges[j].origin);
+                        newCell.vertices.Add(newCell.edges[j].destination);
+                    }
                 }
             }
         }
@@ -210,14 +259,14 @@ public class VoronoiDiagram : MonoBehaviour
                 edge[i] = new Edge();
             }
 
-            edge[0].origin      = vertices[0].pos;
-            edge[0].destination = vertices[1].pos;
-            edge[1].origin      = vertices[1].pos;
-            edge[1].destination = vertices[2].pos;
-            edge[2].origin      = vertices[2].pos;
-            edge[2].destination = vertices[3].pos;
-            edge[3].origin      = vertices[3].pos;
-            edge[3].destination = vertices[0].pos;
+            edge[0].origin      = vertices[0];
+            edge[0].destination = vertices[1];
+            edge[1].origin      = vertices[1];
+            edge[1].destination = vertices[2];
+            edge[2].origin      = vertices[2];
+            edge[2].destination = vertices[3];
+            edge[3].origin      = vertices[3];
+            edge[3].destination = vertices[0];
             for (int i = 0; i < edge.Length; i++)
             {
                 newCell.edges.Add(edge[i]);
@@ -245,14 +294,7 @@ public class VoronoiDiagram : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (cells == null || cells.Count==0)
-        {
-        Gizmos.DrawLine(new Vector3 (limits.xMin,limits.yMin), new Vector3(limits.xMin, limits.yMax));
-        Gizmos.DrawLine(new Vector3 (limits.xMin, limits.yMax), new Vector3(limits.xMax, limits.yMax));
-        Gizmos.DrawLine(new Vector3 (limits.xMax,limits.xMax), new Vector3(limits.xMax, limits.yMin));
-        Gizmos.DrawLine(new Vector3 (limits.xMax,limits.yMin), new Vector3(limits.xMin, limits.yMin));
-            return;
-        }
+        
 
         for (int i = 0; i < cells.Count; i++)
         {
@@ -262,7 +304,7 @@ public class VoronoiDiagram : MonoBehaviour
                 {
                     if (cells[i].edges[j] !=null)
                     {
-                        Gizmos.DrawLine(cells[i].edges[j].origin.pos, cells[i].edges[j].destination.pos);
+                        Gizmos.DrawLine(cells[i].edges[j].origin.pos.pos, cells[i].edges[j].destination.pos.pos);
                     }
                 }
                 if (cells[i].Site!= null)
@@ -274,6 +316,20 @@ public class VoronoiDiagram : MonoBehaviour
                     Gizmos.DrawWireSphere(cells[i].Site.pos.pos, 0.1f);
                 }
             }
+        }
+        if (testing)
+        {
+            Gizmos.DrawLine(testEdge1.origin.pos.pos, testEdge1.destination.pos.pos);
+            Gizmos.DrawLine(testEdge2.origin.pos.pos, testEdge2.destination.pos.pos);
+        }
+
+        if (cells == null || cells.Count == 0)
+        {
+            Gizmos.DrawLine(new Vector3(limits.xMin, limits.yMin), new Vector3(limits.xMin, limits.yMax));
+            Gizmos.DrawLine(new Vector3(limits.xMin, limits.yMax), new Vector3(limits.xMax, limits.yMax));
+            Gizmos.DrawLine(new Vector3(limits.xMax, limits.xMax), new Vector3(limits.xMax, limits.yMin));
+            Gizmos.DrawLine(new Vector3(limits.xMax, limits.yMin), new Vector3(limits.xMin, limits.yMin));
+            return;
         }
     }
 }
@@ -295,6 +351,8 @@ public class VoronoiDiagramEditor : Editor
             voronoi.AddSite();
         if (GUILayout.Button("ClearLists"))
             voronoi.ClearLists();
+        if (GUILayout.Button("TestEdges"))
+            voronoi.TestEdges();
 
     }
 }

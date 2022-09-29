@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Vertice
 {
-    static uint num = 0;
+    public static uint num = 0;
 
     [ReadOnly] public string name;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [Serializable]
 class nodeVisual
@@ -24,6 +25,7 @@ public class NodeGenerator : MonoBehaviourSingleton<NodeGenerator>
     void Start()
     {
         level.RestoreData();
+        ResetMap();
         pathfinding = new PathFinding();
         NodeUtils.MapSize = new Vector2Int(level.columns,level.rows);
         map = new Node[level.columns * level.rows];
@@ -124,10 +126,29 @@ public class NodeGenerator : MonoBehaviourSingleton<NodeGenerator>
             }
 
             Gizmos.color = Color.black;
-            Gizmos.DrawWireCube(new Vector3 (node.position.x, node.position.y), new Vector3(1, 0, 1));
+            switch (node.weight)
+            {
+                case 1:
+                    Gizmos.color = Color.green;
+                    break;
+                case 2:
+                    Gizmos.color = Color.gray;
+                    break;
+                case 3:
+                    Gizmos.color = Color.blue;
+                    break;
+                case 4:
+                    Gizmos.color = Color.yellow;
+                    break;
+                default:
+                    Gizmos.color = Color.black;
+                    break;
+            }
+            Gizmos.DrawWireCube(new Vector3 (node.position.x, node.position.y), new Vector3(1, 1, 0));
 
             Vector3 worldPosition = new Vector3(node.position.x, node.position.y, 0.0f);
             Gizmos.DrawWireSphere(worldPosition, 0.2f);
+            //Gizmos.color = Color.black;
             Handles.Label(worldPosition, node.ID.ToString(), style);
         }
         //color = Color.cyan;

@@ -15,7 +15,7 @@ public class GmPhatFinding : MonoBehaviour
     {
         GameObject sp = Instantiate(aldenito, null);
         MineroPath mineroPath = sp.GetComponent<MineroPath>();
-        mineroPath.placeToGo = casa2;
-        mineroPath.placeToBack = casa;
+        //mineroPath.placeToGo = casa2;
+        //mineroPath.placeToBack = casa;
     }
 }

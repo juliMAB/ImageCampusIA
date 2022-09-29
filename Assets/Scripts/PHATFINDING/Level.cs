@@ -20,7 +20,9 @@ public class Level : MonoBehaviour
     public List<int> data;
 
     [HideInInspector] public bool onPlay = false;
+    List<GameObject> tiles = null;
 
+    public GameObject tilePrefab;
 
     private void Start()
     {
@@ -47,6 +49,56 @@ public class Level : MonoBehaviour
             for (int j = 0; j < rows; j++)
             {
                 data.Add(board[i, j]);
+            }
+        }
+    }
+    public void LoadData()
+    {
+        int v=0;
+        for (int i = 0; i < columns; i++)
+        {
+            for (int j = 0; j < rows; j++)
+            {
+                board[i, j] = data[v];
+                v++;
+            }
+        }
+    }
+
+    public void InstanciateGrid()
+    {
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            Destroy(tiles[i]);
+        }
+        tiles.Clear();
+        tiles = new List<GameObject>();
+        for (int x = 0; x < columns; x++)
+        {
+            for (int y = 0; y < rows; y++)
+            {
+                GameObject tile = Instantiate(tilePrefab,new Vector3(x,y,5),Quaternion.identity);
+                MeshRenderer tileMaterial = tile.GetComponent<MeshRenderer>();
+                switch (board[x,y])
+                {
+                    case 1:
+                        tileMaterial.material.color = Color.green;
+                        break;
+                    case 2:
+                        tileMaterial.material.color = Color.gray;
+                        break;
+                    case 3:
+                        tileMaterial.material.color = Color.blue;
+                        break;
+                    case 4:
+                        tileMaterial.material.color = Color.yellow;
+                        break;
+                    default:
+                        tileMaterial.material.color = Color.white;
+                        break;
+                }
+                
+                tiles.Add(tile);
             }
         }
     }
@@ -91,6 +143,11 @@ public class LevelEditor : Editor
             level.SetGrid();
         if (GUILayout.Button("SaveData"))
             level.SaveData();
+        if (GUILayout.Button("LoadData"))
+            level.LoadData();
+
+        if (GUILayout.Button("InstanciateGrid"))
+            level.InstanciateGrid();
 
         EditorGUILayout.Space();
         if(level.onPlay)

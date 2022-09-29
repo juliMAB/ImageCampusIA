@@ -13,6 +13,7 @@ public enum States
     Minig,
     Depositing,
     GoingToHome,
+    Alert,
 
     ForceGoingToPosition,
     ForceGoingToIdle,
