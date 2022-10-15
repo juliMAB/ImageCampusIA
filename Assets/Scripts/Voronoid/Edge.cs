@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class Edge
@@ -10,13 +7,26 @@ public class Edge
 
     [ReadOnly] public string name;
 
-    public Vertice origin;
-    public Vertice destination;
+    [UnityEngine.SerializeField] private Vertice origin;
+    [UnityEngine.SerializeField] private Vertice destination;
+
+    [UnityEngine.SerializeField] public LinearFunction lf = null;
+    public Vertice Origin {
+        get => origin; 
+        set 
+        {
+            origin = value;
+            if(origin!=null && destination != null)
+                lf = new LinearFunction(origin.pos.pos, Destination.pos.pos);
+        }
+    }
+
+    public Vertice Destination { get => destination; set { destination = value; if (origin != null && destination != null) lf = new LinearFunction(origin.pos.pos, Destination.pos.pos); } }
 
     public Edge(Vertice origin, Vertice destination)
     {
-        this.origin = origin;
-        this.destination = destination;
+        this.Origin = origin;
+        this.Destination = destination;
 
         num++;
         name = "E:" + num.ToString();

@@ -17,8 +17,8 @@ public class Cell
     {
         for (int i = 0; i < edges.Count; i++)
         {
-            float slope = LinearFunction.GetSlope(edges[i].origin.pos.pos, edges[i].destination.pos.pos);
-            Vector3 midPoint = LinearFunction.GetMidPoint(edges[i].origin.pos.pos, edges[i].destination.pos.pos);
+            float slope = LinearFunction.GetSlope(edges[i].Origin.pos.pos, edges[i].Destination.pos.pos);
+            Vector3 midPoint = LinearFunction.GetMidPoint(edges[i].Origin.pos.pos, edges[i].Destination.pos.pos);
             Vector3 positivemidPoint;
             Vector3 negativemidPoint;
             if (float.IsNaN(slope)|| slope==0)

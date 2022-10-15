@@ -94,7 +94,7 @@ namespace FSM2
         {
             if (maxMinitas == m_minitas.Count)
                 return;
-            int aux = 0;
+            
             Mine mine = Instantiate(m_pfMina, new Vector3(newMinaPos.x, newMinaPos.y), Quaternion.identity, transform).GetComponent<Mine>();
             mine.OnEmpty += DeleteMineReference;
             m_minitas.Add(mine);
