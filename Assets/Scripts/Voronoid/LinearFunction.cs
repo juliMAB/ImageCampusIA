@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 
 /// <summary>
@@ -19,15 +20,47 @@ public class LinearFunction
 
     public float slope;
 
+    public void DrawGizmo()
+    {
+        float bigNumber = 9999f;
+        if (float.IsNaN(slope))
+        {
+            Vector3 origin = new Vector3(-bigNumber, moveY);
+            Vector3 direct = new Vector3(bigNumber, moveY);
+            Gizmos.DrawLine(origin, direct);
+        }
+        else if (float.IsInfinity(slope))
+        {
+            Vector3 origin = new Vector3(moveX, -bigNumber);
+            Vector3 direct = new Vector3(moveX, bigNumber);
+            Gizmos.DrawLine(origin, direct);
+        }
+        else
+        {
+            float farY = bigNumber;
+            float farX = GetX(farY);
+            Vector3 origin = new Vector3(farX, farY);
+            farX = GetX(-farY);
+            Vector3 direct = new Vector3(farX, -farY);
+            Gizmos.DrawLine(origin, direct);
+        }
+    }
+
     public static float GetSlope(Vector3 p1, Vector3 p2)
     {
-        return (p2.y - p1.y) / (p2.x - p1.x);
+        float slope = (p2.y - p1.y) / (p2.x - p1.x);
+        if (float.IsNaN(slope))
+            slope = float.PositiveInfinity;
+        else if (float.IsInfinity(slope))
+            slope = float.NaN;
+        else
+            slope = -1 / slope;
+        return slope;
     }
     public static Vector3 GetMidPoint(Vector3 p1, Vector3 p2)
     {
         return new Vector3((p1.x + p2.x) / 2, (p1.y + p2.y) / 2, (p1.z + p2.z) / 2);
     }
-    
     public static float PreguntarSiSeCortanX(LinearFunction a, LinearFunction b)
     {
         if (float.IsNaN(a.slope))
@@ -38,10 +71,10 @@ public class LinearFunction
             }
             if (float.IsInfinity(b.slope))
             {
-                return -b.moveX;
+                return b.moveX;
             }
-            else //a.slope es normal=> a.movey,a.movex es normal.
-                return b.GetX(-a.moveY);
+            else //b.slope es normal=> b.movey,b.movex es normal.
+                return b.GetX(a.moveY);
         }
         else if (float.IsInfinity(a.slope))
         {
@@ -50,17 +83,17 @@ public class LinearFunction
                 return float.PositiveInfinity; // nunca se van a cruzar.
             }
             else
-                return -a.moveX;
+                return a.moveX;
         }
         else //a.slope es normal.
         {
             if (float.IsNaN(b.slope))
             {
-                return a.GetX (-b.moveY);
+                return a.GetX (b.moveY);
             }
             if (float.IsInfinity(b.slope))
             {
-                return a.GetX (- b.moveY);
+                return b.moveX;
             }
             else // a y b es normal.
                 return (-b.moveX * b.slope + b.moveY - a.moveY + a.moveX * a.slope) / (a.slope - b.slope);
@@ -76,8 +109,12 @@ public class LinearFunction
             {
                 return float.NaN;
             }
+            else if (float.IsInfinity(b.slope))
+            {
+                return a.moveY;
+            }
             else
-                return -a.moveY;
+                return a.moveY;
         }
         else if (float.IsInfinity(a.slope))
         {
@@ -85,18 +122,22 @@ public class LinearFunction
             {
                 return float.PositiveInfinity;
             }
+            if (float.IsNaN(b.slope))
+            {
+                return b.moveY;
+            }
             else
-                return -b.moveY;
+                return b.GetY (a.moveX);
         }
         else
         {
             if (float.IsNaN(b.slope))
             {
-                return -b.moveY;
+                return b.moveY;
             }
             if (float.IsInfinity(b.slope))
             {
-                return a.GetY(-b.moveX);
+                return a.GetY(b.moveX);
             }
             else
                 return (a.slope * ((b.slope * (-b.moveX) + b.moveY)) + ((a.slope * (-a.moveX) + a.moveY)) * b.slope) / (b.slope - a.slope);
@@ -120,19 +161,19 @@ public class LinearFunction
         if (float.IsInfinity(slope))
         {
             moveY = 0;
-            moveX = -mp.x;
+            moveX = mp.x;
             return;
         }
         else if (float.IsNaN(slope))
         {
-            moveY = -mp.y;
+            moveY = mp.y;
             moveX = 0;
             return;
         }
         else
         {
-            moveX = -mp.x;
-            moveY = -mp.y;
+            moveX = mp.x;
+            moveY = mp.y;
             return;
         }
     }
@@ -146,19 +187,19 @@ public class LinearFunction
         if (float.IsInfinity (slop))
         {
             moveY = 0;
-            moveX = -mp.x;
+            moveX = mp.x;
             return;
         }
         else if(float.IsNaN(slope))
         {
-            moveY = -mp.y;
+            moveY = mp.y;
             moveX = 0;
             return;
         }
         else
         {
-            moveX = -mp.x;
-            moveY = -mp.y;
+            moveX = mp.x;
+            moveY = mp.y;
             return;
         }
     }
@@ -263,13 +304,13 @@ public class LinearFunction
         LinearFunction functionB = new LinearFunction(b.Origin.pos.pos, b.Destination.pos.pos);
         if (float.IsNaN(functionB.slope))
         {
-            if (a.y != -functionB.moveY)
+            if (a.y != functionB.moveY)
                 return false;
             return true;
         }
         if (float.IsInfinity(functionB.slope))
         {
-            if (a.x != -functionB.moveX)
+            if (a.x != functionB.moveX)
                 return false;
             return true;
         }
@@ -292,7 +333,7 @@ public class LinearFunction
         else if (float.IsInfinity(slope))
             return -moveX;
         else
-            return (y - moveY) / slope - moveX;
+            return (y - moveY) / slope + moveX;
             //return (y - ((slope * (moveX + moveY))) / slope);
     }
 
@@ -303,7 +344,7 @@ public class LinearFunction
         else if (float.IsNaN(slope))
             return -moveY;
         else
-            return slope * (x + moveX) - moveY;
+            return slope * (x - moveX) + moveY;
             //return  slope * (x + moveX) - moveY;
     }
 
