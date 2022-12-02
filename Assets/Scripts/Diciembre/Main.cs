@@ -10,18 +10,22 @@ namespace Diciembre
         [SerializeField] private bool showNodes = false;
         [SerializeField] private int GuiStyleSize = 10;
         #endregion
+
         #region PUBLIC_FIELD
         public static Node[] mainMap;
+        public static Vector2Int MapSize;
         #endregion
+
         #region PRIVATE_FIELD
         private PathFinding pathfinding;
         #endregion
+
         #region UNITY_CALLS
         private void Start()
         {
             mapEditor.MyStart();
             pathfinding = new PathFinding();
-            NodeUtils.MapSize = new Vector2Int(mapEditor.columns, mapEditor.rows);
+            MapSize = new Vector2Int(mapEditor.columns, mapEditor.rows);
             InitAllMap();
             mapEditor.gameObject.SetActive(false);
         }
@@ -47,6 +51,7 @@ namespace Diciembre
             }
         }
         #endregion
+
         #region PRIVATE_METHODS
         private void InitMap() => mainMap = new Node[mapEditor.columns * mapEditor.rows];
         private void InitNodesMap()
@@ -66,5 +71,6 @@ namespace Diciembre
             InitNodesMap();
         }
         #endregion
+
     }
 }

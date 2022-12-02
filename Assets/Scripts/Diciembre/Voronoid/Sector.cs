@@ -204,9 +204,9 @@ namespace Diciembre
             Vector2 intersection = Vector2.zero;
 
             Vector2 p1 = seg1.Mediatrix;
-            Vector2 p2 = seg1.Mediatrix + seg1.Direction * NodeUtils.MapSize.magnitude;
+            Vector2 p2 = seg1.Mediatrix + seg1.Direction * Main.MapSize.magnitude;
             Vector2 p3 = seg2.Mediatrix;
-            Vector2 p4 = seg2.Mediatrix + seg2.Direction * NodeUtils.MapSize.magnitude;
+            Vector2 p4 = seg2.Mediatrix + seg2.Direction * Main.MapSize.magnitude;
 
             if (((p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x)) == 0) return intersection;
 

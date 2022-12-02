@@ -6,7 +6,7 @@ namespace Diciembre
     public class Resource : MonoBehaviour
     {
         #region PUBLIC_FIELDS
-        public event Action<Resource> OnEmpty;
+        public Action<Resource> OnEmpty;
         public int resourceAmount;
         #endregion
 
