@@ -8,7 +8,7 @@ public class Node
         Open,    //Abiertos por otro nodo pero no visitados
         Closed,  //ya visitados
         Ready,   //no abiertos por nadie
-        Obstacle
+        Obstacle = -1
 
     }
 
@@ -35,6 +35,8 @@ public class Node
 
     public void SetWeight(int weight)
     {
+        if (weight == -1)
+            state = NodeState.Obstacle;
         this.weight = weight;
         originalWigth = weight;
     }
