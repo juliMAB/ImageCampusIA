@@ -26,27 +26,36 @@ namespace Diciembre
 
         void Start()
         {
+            level.MyStart();
             pathfinding = new PathFinding();
             NodeUtils.MapSize = new Vector2Int(level.columns, level.rows);
-            InitWeightsMap();
+            InitAllMap();
         }
-
-        private void InitWeightsMap()
+        private void InitMap() => map = new Node[level.columns * level.rows];
+        private void InitNodesMap()
         {
-            map = new Node[level.columns * level.rows];
             int ID = 0;
-            for (int i = 0; i < level.rows; i++)
-                for (int j = 0; j < level.columns; j++)
+            for (int i = 0; i < level.columns; i++)
+                for (int j = 0; j < level.rows; j++)
                 {
-                    map[ID] = new Node(ID, new Vector2Int(j, i));
+                    map[ID] = new Node(ID, new Vector2Int(i, j));
                     ID++;
                 }
-            for (int i = 0; i < level.rows; i++)
-                for (int j = 0; j < level.columns; j++)
+        }
+        private void InitWeightMap()
+        {
+            for (int i = 0; i < level.columns; i++)
+                for (int j = 0; j < level.rows; j++)
                 {
-                    int index = NodeUtils.PositionToIndex(new Vector2Int(j, i));
-                    map[index].SetWeight((int)level.board[j, i]);
+                    int index = NodeUtils.PositionToIndex(new Vector2Int(i, j));
+                    map[index].SetWeight((int)level.board[i, j]);
                 }
+        }
+        private void InitAllMap()
+        {
+            InitMap();
+            InitNodesMap();
+            InitWeightMap();
         }
 
         public List<Vector2Int> GetShortestPath(Vector2Int origin, Vector2Int destination)
@@ -81,6 +90,8 @@ namespace Diciembre
             GUIStyle style = new GUIStyle() { fontSize = nv.sizeLabel };
             foreach (Node node in map)
             {
+                if (node==null)
+                    return;
                 switch (node.state)
                 {
                     case Node.NodeState.Open:

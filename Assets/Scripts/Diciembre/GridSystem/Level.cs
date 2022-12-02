@@ -5,25 +5,37 @@ using System;
 
 namespace Diciembre
 {
+    [System.Serializable]
+    public class TileSave
+    {
+        public int x = 1, y = 1;
+        public TILE_TYPE type;
+
+        public TileSave(int x,int y, TILE_TYPE data)
+        {
+            this.x = x;
+            this.y = y;
+            this.type = data;
+        }
+    }
     public enum TILE_TYPE {ROCK = -1, GRASS = 0 , WATER = 1, SAND = 2}
     [System.Serializable]
     public class Level : MonoBehaviour
     {
         #region PUBLICS_FIELDS
 
-        [SerializeField,Range(0,50)] public int columns,rows;
+        [SerializeField,Range(0,50)] public int columns=1,rows=1;
 
-        [NonSerialized] public TILE_TYPE[,] board;
+        [SerializeField] public TILE_TYPE[,] board;
 
-        [NonSerialized] public Action OnMyValidate;
+        [SerializeField] public Action OnMyValidate;
 
+        [SerializeField] public int realColums = 0, realRows = 0;
         #endregion
 
         #region PRIVATE_FIELDS
 
-        private int prevColumns=0, prevRows=0;
-
-        private Dictionary<Vector2Int, TILE_TYPE> data;
+        private List<TileSave> data;
 
         #endregion
 
@@ -37,50 +49,66 @@ namespace Diciembre
                 rows = 1;
             if (columns + rows >= 50)
                 Debug.LogWarning("la grilla es muy grande.");
-            if (columns!=prevColumns||rows!=prevRows)
-                SetGrid();
-            if(data!=null)
-                LoadData();
         }
 
         #endregion
 
         #region PRIVATE_METHODS
-        private void SetGrid()
-        {
-            prevColumns = columns;
-            prevRows = rows;
-            OnMyValidate = SaveData;
-            board = new TILE_TYPE[columns, rows];
-            for (int i = 0; i < columns; i++)
-                for (int j = 0; j < rows; j++)
-                    board[i, j] = TILE_TYPE.GRASS;
-        }
         private void SaveData()
         {
-            data = new Dictionary<Vector2Int, TILE_TYPE>();
+            Debug.Log("SaveData");
+            data = new List<TileSave>();
             data.Clear();
-            for (int i = 0; i < columns; i++)
-                for (int j = 0; j < rows; j++)
-                    data.Add(new Vector2Int(i, j), board[i, j]);
+            for (int i = 0; i < realColums; i++)
+                for (int j = 0; j < realRows; j++)
+                    data.Add(new TileSave(i,j,board[i, j]));
         }
         private void LoadData()
         {
+            
             if (data == null)
                 return;
-            for (int i = 0; i < columns; i++)
+
+            Debug.Log("LoadData");
+            for (int i = 0; i < realColums; i++)
             {
-                for (int j = 0; j < rows; j++)
+                for (int j = 0; j < realRows; j++)
                 {
-                    TILE_TYPE value = TILE_TYPE.GRASS;
-                    data.TryGetValue(new Vector2Int(i, j), out value);
-                    board[i, j] = value;
+                    TileSave t = TryGetTileOnList(i,j);
+                    if (t == null)
+                        board[i, j] = 0;
+                    else
+                        board[i, j] = t.type;
                 }
             }
+        }
+        private TileSave TryGetTileOnList(int x,int y)
+        {
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (data[i].x==x && data[i].y==y)
+                    return data[i];
+            }
+            return null;
         }
         #endregion
 
         #region PUBLIC_METHODS
+        public void SetGrid()
+        {
+            Debug.Log("setGrid");
+            OnMyValidate = SaveData;
+            board = new TILE_TYPE[columns, rows];
+            realColums= columns;
+            realRows= rows;
+            if (data != null)
+                LoadData();
+        }
+
+        public void MyStart()
+        {
+            SetGrid();
+        }
         public static float GetSpeedInTerrain(Vector3 pos)
         {
             Vector2Int position = NodeUtils.GetVec3IntFromVector3(pos);
@@ -101,7 +129,20 @@ namespace Diciembre
 
             Level level = (Level)target;
 
+            if (GUILayout.Button("setGrid"))
+                level.SetGrid();
+
+            if (!level)
+                return;
+            if (level.columns<1||level.rows<1)
+                return;
+            if (level.board == null)
+                return;
+            if ((level.columns != level.realColums)|| (level.rows != level.realRows))
+                return;
+
             EditorGUILayout.Space();
+
 
             EditorGUI.indentLevel = 0;
 
