@@ -26,7 +26,7 @@ namespace Diciembre
 
         void Start()
         {
-            level.MyStart();
+            level.MyStart(); // recargar el mapa de widhts.
             pathfinding = new PathFinding();
             NodeUtils.MapSize = new Vector2Int(level.columns, level.rows);
             InitAllMap();

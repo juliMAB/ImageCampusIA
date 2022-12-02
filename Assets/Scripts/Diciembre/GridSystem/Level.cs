@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 namespace Diciembre
 {
@@ -20,7 +21,7 @@ namespace Diciembre
     }
     public enum TILE_TYPE {ROCK = -1, GRASS = 0 , WATER = 1, SAND = 2}
     [System.Serializable]
-    public class Level : MonoBehaviour
+    public class Level : MonoBehaviourSingleton<Level>
     {
         #region PUBLICS_FIELDS
 
@@ -31,11 +32,13 @@ namespace Diciembre
         [SerializeField] public Action OnMyValidate;
 
         [SerializeField] public int realColums = 0, realRows = 0;
+
+        [SerializeField] public bool ShowGUI = false;
         #endregion
 
-        #region PRIVATE_FIELDS
+        #region EXPOSED_FIELDS
 
-        private List<TileSave> data;
+        [SerializeField] private List<TileSave> data; // preguntar porque esto no se pasa al game si no es serializedField.
 
         #endregion
 
@@ -49,6 +52,22 @@ namespace Diciembre
                 rows = 1;
             if (columns + rows >= 50)
                 Debug.LogWarning("la grilla es muy grande.");
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!ShowGUI)
+                return;
+            if (board == null)
+                return;
+            for (int i = 0; i < realColums; i++)
+            {
+                for (int j = 0; j < realRows; j++)
+                {
+                    Gizmos.color = GetColor(board[i, j]);
+                    Gizmos.DrawWireCube(new Vector3(i, j), new Vector3(1, 1, 0));
+                }
+            }
         }
 
         #endregion
@@ -91,9 +110,26 @@ namespace Diciembre
             }
             return null;
         }
+
         #endregion
 
         #region PUBLIC_METHODS
+        public static Color GetColor(TILE_TYPE t)
+        {
+            switch (t)
+            {
+                case TILE_TYPE.ROCK:
+                    return Color.black;
+                case TILE_TYPE.GRASS:
+                    return Color.green;
+                case TILE_TYPE.WATER:
+                    return Color.blue;
+                case TILE_TYPE.SAND:
+                    return Color.yellow;
+                default:
+                    return Color.white;
+            }
+        }
         public void SetGrid()
         {
             Debug.Log("setGrid");
@@ -104,7 +140,6 @@ namespace Diciembre
             if (data != null)
                 LoadData();
         }
-
         public void MyStart()
         {
             SetGrid();
@@ -116,6 +151,11 @@ namespace Diciembre
             if (weight == 0)
                 return 0;
             return 1 / weight;
+        }
+
+        public TILE_TYPE GetValueByIndexData(int i)
+        {
+            return data[i].type;
         }
         #endregion
     }
