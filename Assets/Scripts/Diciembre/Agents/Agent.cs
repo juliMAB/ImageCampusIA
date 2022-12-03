@@ -83,7 +83,7 @@ namespace Diciembre
             {
                 currentTime = 1;
                 amountInventory += resource.TakeResource();
-                if (amountInventory == maxInventory) // full inventory.
+                if (amountInventory >= maxInventory) // full inventory.
                 {
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnFullInventory);
                     lastFlag = Flags.OnForceFullInventory;
@@ -105,9 +105,7 @@ namespace Diciembre
                 return;
             }
             else
-            {
                 resource = ResourceSpawner.GetAnyResource();
-            }
         }
         private void GoingToMineBehaviour()
         {
@@ -135,6 +133,7 @@ namespace Diciembre
                     }
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnStartMine);
                     lastFlag = Flags.OnStartMine;
+                    transform.position = localmine;
                     return;
                 });
             }
@@ -150,10 +149,12 @@ namespace Diciembre
                     {
                         finiteStateMachine.SetFlag(ref currentState, Flags.OnReachHome);
                         lastFlag = Flags.OnReachHome;
+                        transform.position = home;
                         return;
                     }
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
                     lastFlag = Flags.OnIddle;
+                    transform.position = home;
                     return;
                 });
         }

@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
-
 using UnityEngine;
 using UnityEditor;
-using static UnityEditor.PlayerSettings;
+
 namespace Diciembre
 {
     public class Sector
     {
         #region PRIVATE_FIELDS
-        private Mine mine = null;
+        private Resource mine = null;
         private Color color = Color.white;
         private List<Segment> segments = null;
         private List<Vector2> intersections = null;
@@ -17,11 +16,11 @@ namespace Diciembre
         #endregion
 
         #region PROPERTIES
-        public Mine Mine { get => mine; }
+        public Resource Mine { get => mine; }
         #endregion
 
         #region CONSTRUCTORS
-        public Sector(Mine mine)
+        public Sector(Resource mine)
         {
             this.mine = mine;
 

@@ -1,13 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Diciembre
 {
     public class AgentSpawner : MonoBehaviour
     {
         #region EXPOSED_FIELD
-        [SerializeField] private Button spawnAgentButton;
-
         [SerializeField] private GameObject agentPrefab;
         [SerializeField] private CentroUrbano townCenter;
         [SerializeField] private Transform agentConteiner;
@@ -20,10 +17,6 @@ namespace Diciembre
             Agent agent = agentGO.GetComponent<Agent>();
             townCenter.AddAgent(agent);
             agent.Init(townCenter);
-        }
-        private void Start()
-        {
-            spawnAgentButton.onClick.AddListener(SpawnAldeano);
         }
         #endregion
     }

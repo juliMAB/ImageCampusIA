@@ -7,6 +7,10 @@ namespace Diciembre
     public class Main : MonoBehaviourSingleton<Main>
     {
         #region EXPOSED_FIELD
+        [SerializeField] private UI myUI;
+        [SerializeField] private ResourceSpawner rS;
+        [SerializeField] private AgentSpawner aS;
+
         [SerializeField] private Level mapEditor;
         [SerializeField] private bool showNodes = false;
         [SerializeField] private int GuiStyleSize = 10;
@@ -29,6 +33,8 @@ namespace Diciembre
             MapSize = new Vector2Int(mapEditor.columns, mapEditor.rows);
             InitAllMap();
             mapEditor.gameObject.SetActive(false);
+            VoronoiController.Init();
+            myUI.Init(() => aS.SpawnAldeano(), () => { rS.SpawnResource(); VoronoiController.SetVoronoi(ResourceSpawner.Resources); });
         }
         private void OnDrawGizmos()
         {

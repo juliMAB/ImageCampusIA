@@ -9,8 +9,6 @@ namespace Diciembre
     public class ResourceSpawner : MonoBehaviour
     {
         #region EXPOSED_FIELD
-        [SerializeField] private Button SpawnResourceButton;
-
         [SerializeField] private GameObject resourcePrefab;
         [SerializeField] private CentroUrbano townCenter;
         [SerializeField] private Transform resourceConteiner;
@@ -22,10 +20,12 @@ namespace Diciembre
 
         #region PRIVATE_FIELDS
         private static List<Resource> resources = new List<Resource>();
+
         #endregion
+        public static List<Resource> Resources { get => resources; }
 
         #region PUBLIC_METHODS
-        private void SpawnResource()
+        public void SpawnResource()
         {
             if (!(maxResources >= resources.Count))
                 return;
@@ -109,13 +109,6 @@ namespace Diciembre
         private bool SamePosAsTown(Vector2Int randPos)
         {
             return randPos == new Vector2Int(Mathf.RoundToInt(townCenter.transform.position.x), Mathf.RoundToInt(townCenter.transform.position.y));
-        }
-        #endregion
-
-        #region UNITY_CALLS
-        private void Start()
-        {
-            SpawnResourceButton.onClick.AddListener(SpawnResource);
         }
         #endregion
     }
