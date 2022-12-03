@@ -18,7 +18,7 @@ namespace Diciembre
         #endregion
 
         #region PRIVATE_FIELDS
-        private List<Resource> resources = new List<Resource>();
+        private static List<Resource> resources = new List<Resource>();
         #endregion
 
         #region PUBLIC_METHODS
@@ -47,6 +47,12 @@ namespace Diciembre
             Resource agent = resourceGO.GetComponent<Resource>();
             agent.OnEmpty += DeleteResourceReference;
             resources.Add(agent);
+        }
+        public static Resource GetAnyResource()
+        {
+            if (resources.Count == 0)
+                return null;
+            return resources[Random.Range(0, resources.Count)];
         }
         #endregion
 

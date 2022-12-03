@@ -7,6 +7,7 @@ namespace Diciembre
     {
         #region EXPOSED_FIELDS
         [SerializeField] private List<Agent> agents = null;
+        [SerializeField] public int gold = 0;
         #endregion
 
         #region UNITY_CALLS

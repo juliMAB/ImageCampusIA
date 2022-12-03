@@ -36,85 +36,85 @@ namespace FSM2
 
         private void SetFsm()
         {
-            finiteStateMachine = new FiniteStateMachine();
-
-            currentState = States.Idle;
-
-            //------Relations-----
-
-            // instruccion de ir a minar.
-            finiteStateMachine.SetRelation(States.Idle, Flags.OnGoToMine, States.GoingToMine);
-
-            //ir a minar, llegar a minar.
-            finiteStateMachine.SetRelation(States.GoingToMine, Flags.OnReachResource, States.Minig);
-
-            //minando, irese a casa.
-            finiteStateMachine.SetRelation(States.Minig, Flags.OnFullInventory, States.GoingToHome);
-
-            //va a casa, deposita.
-            finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnReachWithResource, States.Depositing);
-
-            //va a casa
-            //finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnFullInventory, States.Depositing);
-
-            //deposita, termina de depositar -> idle.
-            finiteStateMachine.SetRelation(States.Depositing, Flags.OnEmptyInventory, States.Idle);
-
-            //------Behaviours------
-
-            //setea la accion por minar.
-            finiteStateMachine.AddBehaviour(States.Minig, MiningBehaviour, () => { Debug.Log("Voy a ir a minar"); }, () => { Debug.Log("deje de minar"); });
-
-            //setea la accion por ir a mina.
-            finiteStateMachine.AddBehaviour(States.GoingToMine, GoingToMineBehaviour);
-
-            //setea la accion por ir a casa.
-            finiteStateMachine.AddBehaviour(States.GoingToHome, GoingToHomeBehaviour);
-
-            //setear la accion al depositar.
-            finiteStateMachine.AddBehaviour(States.Depositing, DepositingBehaviour);
-
-            //setear la accion al iddle.
-            finiteStateMachine.AddBehaviour(States.Idle, IddleBehaviour, () => { Debug.Log("estoy Idle"); }, () => { Debug.Log("ya no estoy Idle"); });
-
-            //setear la accion al descansar.
-            finiteStateMachine.AddBehaviour(States.Resting, RestingBehaviour, () => { Debug.Log("Comenzo el descanso"); }, () => { Debug.Log("termino el descanso"); });
-
-            finiteStateMachine.AddBehaviour(States.ForceGoingToHome, ForceGoingToHomeBehaviour, () => { Debug.Log("Me vuelvo corriendo a casa"); }, () => { Debug.Log("ta bien"); });
-            //-----Relations-Force------
-
-            finiteStateMachine.SetRelation(States.Idle, Flags.ForceToPosition, States.ForceGoingToPosition);
-            finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToPosition, States.ForceGoingToPosition);
-            finiteStateMachine.SetRelation(States.GoingToHome, Flags.ForceToPosition, States.ForceGoingToPosition);
-            finiteStateMachine.SetRelation(States.Depositing, Flags.ForceToPosition, States.ForceGoingToPosition);
-            finiteStateMachine.SetRelation(States.ForceGoingToHome, Flags.OnFullInventory, States.Depositing);
-
-            finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToIdle, States.Idle);
-
-            //va de cualquier estado a descansar (en Tired).
-            for (int i = 0; i < (int)States._Count; i++)
-            {
-                finiteStateMachine.SetRelation((States)i, Flags.OnTired, States.Resting);
-            }
-            //va de cualquier estado a iddle (en forceidle).
-            for (int i = 0; i < (int)States._Count; i++)
-            {
-                finiteStateMachine.SetRelation((States)i, Flags.ForceToIdle, States.Idle);
-            }
-            //va de cualquier estado a ir a casa (en alerta).
-            for (int i = 0; i < (int)States._Count; i++)
-            {
-                finiteStateMachine.SetRelation((States)i, Flags.OnAlert, States.Alert);
-            }
-            finiteStateMachine.SetRelation(States.Alert, Flags.ForceToHome, States.ForceGoingToHome);
-            finiteStateMachine.AddBehaviour(States.Alert, () => { minerPath.firstCall = true; finiteStateMachine.SetFlag(ref currentState, Flags.ForceToHome); });
-            finiteStateMachine.SetRelation(States.ForceGoingToHome, Flags.OnGoToMine, States.GoingToMine);
-
-
-            finiteStateMachine.SetRelation(States.Resting, Flags.OnFullInventory, States.GoingToHome);
-            finiteStateMachine.SetRelation(States.Resting, Flags.OnGoToMine, States.GoingToMine);
-            finiteStateMachine.SetRelation(States.Resting, Flags.OnReachResource, States.Minig);
-            finiteStateMachine.SetRelation(States.Resting, Flags.OnEmptyInventory, States.GoingToHome);
+        //    finiteStateMachine = new FiniteStateMachine();
+        //
+        //    currentState = States.Idle;
+        //
+        //    //------Relations-----
+        //
+        //    // instruccion de ir a minar.
+        //    finiteStateMachine.SetRelation(States.Idle, Flags.OnGoToMine, States.GoingToMine);
+        //
+        //    //ir a minar, llegar a minar.
+        //    finiteStateMachine.SetRelation(States.GoingToMine, Flags.OnReachResource, States.Minig);
+        //
+        //    //minando, irese a casa.
+        //    finiteStateMachine.SetRelation(States.Minig, Flags.OnFullInventory, States.GoingToHome);
+        //
+        //    //va a casa, deposita.
+        //    finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnReachWithResource, States.Depositing);
+        //
+        //    //va a casa
+        //    //finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnFullInventory, States.Depositing);
+        //
+        //    //deposita, termina de depositar -> idle.
+        //    finiteStateMachine.SetRelation(States.Depositing, Flags.OnEmptyInventory, States.Idle);
+        //
+        //    //------Behaviours------
+        //
+        //    //setea la accion por minar.
+        //    finiteStateMachine.AddBehaviour(States.Minig, MiningBehaviour, () => { Debug.Log("Voy a ir a minar"); }, () => { Debug.Log("deje de minar"); });
+        //
+        //    //setea la accion por ir a mina.
+        //    finiteStateMachine.AddBehaviour(States.GoingToMine, GoingToMineBehaviour);
+        //
+        //    //setea la accion por ir a casa.
+        //    finiteStateMachine.AddBehaviour(States.GoingToHome, GoingToHomeBehaviour);
+        //
+        //    //setear la accion al depositar.
+        //    finiteStateMachine.AddBehaviour(States.Depositing, DepositingBehaviour);
+        //
+        //    //setear la accion al iddle.
+        //    finiteStateMachine.AddBehaviour(States.Idle, IddleBehaviour, () => { Debug.Log("estoy Idle"); }, () => { Debug.Log("ya no estoy Idle"); });
+        //
+        //    //setear la accion al descansar.
+        //    finiteStateMachine.AddBehaviour(States.Resting, RestingBehaviour, () => { Debug.Log("Comenzo el descanso"); }, () => { Debug.Log("termino el descanso"); });
+        //
+        //    finiteStateMachine.AddBehaviour(States.ForceGoingToHome, ForceGoingToHomeBehaviour, () => { Debug.Log("Me vuelvo corriendo a casa"); }, () => { Debug.Log("ta bien"); });
+        //    //-----Relations-Force------
+        //
+        //    finiteStateMachine.SetRelation(States.Idle, Flags.ForceToPosition, States.ForceGoingToPosition);
+        //    finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToPosition, States.ForceGoingToPosition);
+        //    finiteStateMachine.SetRelation(States.GoingToHome, Flags.ForceToPosition, States.ForceGoingToPosition);
+        //    finiteStateMachine.SetRelation(States.Depositing, Flags.ForceToPosition, States.ForceGoingToPosition);
+        //    finiteStateMachine.SetRelation(States.ForceGoingToHome, Flags.OnFullInventory, States.Depositing);
+        //
+        //    finiteStateMachine.SetRelation(States.GoingToMine, Flags.ForceToIdle, States.Idle);
+        //
+        //    //va de cualquier estado a descansar (en Tired).
+        //    for (int i = 0; i < (int)States._Count; i++)
+        //    {
+        //        finiteStateMachine.SetRelation((States)i, Flags.OnTired, States.Resting);
+        //    }
+        //    //va de cualquier estado a iddle (en forceidle).
+        //    for (int i = 0; i < (int)States._Count; i++)
+        //    {
+        //        finiteStateMachine.SetRelation((States)i, Flags.ForceToIdle, States.Idle);
+        //    }
+        //    //va de cualquier estado a ir a casa (en alerta).
+        //    for (int i = 0; i < (int)States._Count; i++)
+        //    {
+        //        finiteStateMachine.SetRelation((States)i, Flags.OnAlert, States.Alert);
+        //    }
+        //    finiteStateMachine.SetRelation(States.Alert, Flags.ForceToHome, States.ForceGoingToHome);
+        //    finiteStateMachine.AddBehaviour(States.Alert, () => { minerPath.firstCall = true; finiteStateMachine.SetFlag(ref currentState, Flags.ForceToHome); });
+        //    finiteStateMachine.SetRelation(States.ForceGoingToHome, Flags.OnGoToMine, States.GoingToMine);
+        //
+        //
+        //    finiteStateMachine.SetRelation(States.Resting, Flags.OnFullInventory, States.GoingToHome);
+        //    finiteStateMachine.SetRelation(States.Resting, Flags.OnGoToMine, States.GoingToMine);
+        //    finiteStateMachine.SetRelation(States.Resting, Flags.OnReachResource, States.Minig);
+        //    finiteStateMachine.SetRelation(States.Resting, Flags.OnEmptyInventory, States.GoingToHome);
         }
 
         public void ForceGoingToHomeBehaviour()
@@ -139,9 +139,9 @@ namespace FSM2
         }
         public void ForceToWork()
         {
-            minerPath.firstCall = false;
-            finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
-            lastFlag = Flags.OnGoToMine;
+        //    minerPath.firstCall = false;
+        //    finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+        //    lastFlag = Flags.OnGoToMine;
         }
 
         public void RestingBehaviour()
@@ -159,67 +159,67 @@ namespace FSM2
 
         public void IddleBehaviour()
         {
-            if (mine)
-            {
-                finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
-                lastFlag = Flags.OnGoToMine;
-                return;
-            }
-            if (currentActionTime < stats.tiempohastaaburrirse)
-            {
-                currentActionTime += Time.deltaTime;
-            }
-            else
-            {
-                currentActionTime = 0;
-                finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
-                lastFlag = Flags.OnGoToMine;
-            }
+        //    if (mine)
+        //    {
+        //        finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+        //        lastFlag = Flags.OnGoToMine;
+        //        return;
+        //    }
+        //    if (currentActionTime < stats.tiempohastaaburrirse)
+        //    {
+        //        currentActionTime += Time.deltaTime;
+        //    }
+        //    else
+        //    {
+        //        currentActionTime = 0;
+        //        finiteStateMachine.SetFlag(ref currentState, Flags.OnGoToMine);
+        //        lastFlag = Flags.OnGoToMine;
+        //    }
         }
 
         private void GoingToHomeBehaviour()
         {
-            Vector3 home = new Vector3(m_home.transform.position.x, m_home.transform.position.y);
-
-
-            minerPath.CallPath(stats.speed, transform.position, home,
-                () =>
-                {
-                    if (stats.goldAmount > 0)
-                    {
-                        finiteStateMachine.SetFlag(ref currentState, Flags.OnReachWithResource);
-                        lastFlag = Flags.OnReachWithResource;
-                        return;
-                    }
-                    finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
-                    lastFlag = Flags.ForceToIdle;
-                });
+        //    Vector3 home = new Vector3(m_home.transform.position.x, m_home.transform.position.y);
+        //
+        //
+        //    minerPath.CallPath(stats.speed, transform.position, home,
+        //        () =>
+        //        {
+        //            if (stats.goldAmount > 0)
+        //            {
+        //                finiteStateMachine.SetFlag(ref currentState, Flags.OnReachWithResource);
+        //                lastFlag = Flags.OnReachWithResource;
+        //                return;
+        //            }
+        //            finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
+        //            lastFlag = Flags.ForceToIdle;
+        //        });
         }
 
         private void GoingToMineBehaviour()
         {
-            if (mine == null)
-            {
-                mine = m_home.GetAnyMina();
-                if (mine == null)
-                {
-                    finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
-                    lastFlag = Flags.ForceToIdle;
-                }
-            }
-            else
-            {
-                Vector3 localmine = mine.transform.position;
-
-                minerPath.CallPath(stats.speed ,transform.position, localmine,
-                () =>
-                {
-                    finiteStateMachine.SetFlag(ref currentState, Flags.OnReachResource);
-                    lastFlag = Flags.OnReachResource;
-                    return;
-                });
-
-            }
+        //    if (mine == null)
+        //    {
+        //        mine = m_home.GetAnyMina();
+        //        if (mine == null)
+        //        {
+        //            finiteStateMachine.SetFlag(ref currentState, Flags.ForceToIdle);
+        //            lastFlag = Flags.ForceToIdle;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Vector3 localmine = mine.transform.position;
+        //
+        //        minerPath.CallPath(stats.speed ,transform.position, localmine,
+        //        () =>
+        //        {
+        //            finiteStateMachine.SetFlag(ref currentState, Flags.OnReachResource);
+        //            lastFlag = Flags.OnReachResource;
+        //            return;
+        //        });
+        //
+        //    }
         }
 
         private void MiningBehaviour()
@@ -261,8 +261,8 @@ namespace FSM2
         {
             m_home.Gold += stats.goldAmount;
             stats.goldAmount = 0;
-            finiteStateMachine.SetFlag(ref currentState, Flags.OnEmptyInventory);
-            lastFlag = Flags.OnEmptyInventory;
+            //finiteStateMachine.SetFlag(ref currentState, Flags.OnEmptyInventory);
+            //lastFlag = Flags.OnEmptyInventory;
             Debug.Log("se deposito y tengo inventario vacio");
         }
 

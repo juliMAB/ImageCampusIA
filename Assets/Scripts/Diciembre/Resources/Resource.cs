@@ -11,10 +11,11 @@ namespace Diciembre
         #endregion
 
         #region PUBLIC_METHODS
-        public float TakeResource()
+        public int TakeResource()
         {
             if (resourceAmount > 0)
             {
+                resourceAmount--;
                 if (resourceAmount - 1 <= 0)
                     DestroyResource();
                 return 1;

@@ -19,7 +19,7 @@ namespace Diciembre
             this.type = data;
         }
     }
-    public enum TILE_TYPE {ROCK = -1, GRASS = 0 , WATER = 1, SAND = 2}
+    public enum TILE_TYPE {ROCK = -1, GRASS = 1 , WATER = 2, SAND = 3}
     [System.Serializable]
     public class Level : MonoBehaviourSingleton<Level>
     {
@@ -95,7 +95,7 @@ namespace Diciembre
                 {
                     TileSave t = TryGetTileOnList(i,j);
                     if (t == null)
-                        board[i, j] = 0;
+                        board[i, j] = TILE_TYPE.GRASS;
                     else
                         board[i, j] = t.type;
                 }
@@ -147,7 +147,7 @@ namespace Diciembre
         public static float GetSpeedInTerrain(Vector3 pos)
         {
             Vector2Int position = NodeUtils.GetVec3IntFromVector3(pos);
-            float weight = NodeGenerator.map[NodeUtils.PositionToIndex(position)].weight;
+            float weight = Main.mainMap[NodeUtils.PositionToIndex(position)].weight;
             if (weight == 0)
                 return 0;
             return 1 / weight;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,6 +70,32 @@ namespace Diciembre
         {
             InitMap();
             InitNodesMap();
+        }
+
+        private static void ResetMap()
+        {
+            if (mainMap != null)
+                foreach (Node node in mainMap)
+                {
+                    node.Reset();
+                }
+        }
+        #endregion
+
+        #region PUBLIC_METHODS
+        public List<Vector2Int> GetShortestPath(Vector2Int origin, Vector2Int destination)
+        {
+            ResetMap();
+            int v1 = NodeUtils.PositionToIndex(origin);
+            int v2 = NodeUtils.PositionToIndex(destination);
+            if (v1 == -1 || v2 == -1)
+            {
+                Debug.Log("la posicion no pertenece a la grid");
+                return null;
+            }
+            return pathfinding.GetPath(mainMap,
+                mainMap[v1],
+                mainMap[v2]);
         }
         #endregion
 

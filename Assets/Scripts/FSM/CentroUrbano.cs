@@ -76,17 +76,17 @@ namespace FSM
         }
         public void Descansar()
         {
-            for (int i = 0; i < aldeanos.Count; i++)
-            {
-                aldeanos[i].SetFlag(Flags.OnTired);
-            }
+            //for (int i = 0; i < aldeanos.Count; i++)
+            //{
+            //    aldeanos[i].SetFlag(Flags.OnTired);
+            //}
         }
         public void Alerta()
         {
-            for (int i = 0; i < aldeanos.Count; i++)
-            {
-                aldeanos[i].SetFlag(Flags.OnAlert);
-            }
+            //for (int i = 0; i < aldeanos.Count; i++)
+            //{
+            //    aldeanos[i].SetFlag(Flags.OnAlert);
+            //}
         }
 
     }

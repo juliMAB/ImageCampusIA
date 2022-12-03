@@ -7,17 +7,13 @@ using UnityEngine;
 public enum States
 {
     Undefined = -1,
+    //Resting,
     Idle,
-    Resting,
     GoingToMine,
     Minig,
-    Depositing,
     GoingToHome,
-    Alert,
-
-    ForceGoingToPosition,
-    ForceGoingToIdle,
-    ForceGoingToHome,
+    Depositing,
+    //Alert,
 
     _Count
 }
@@ -25,18 +21,22 @@ public enum States
 public enum Flags
 {
     Undefined = -1,
+    OnGoMine,
+    //OnReachResource,
+    OnStartMine,
     OnFullInventory,
-    OnReachResource,
-    OnReachWithResource,
-    OnGoToMine,
-    OnEmptyInventory,
-    OnTired,
-    OnAlert,
+    OnGoToHome,
+    OnReachHome,
+    OnClearInventory,
+    OnIddle,
 
-    ForceToWork,
-    ForceToPosition,
-    ForceToHome,
-    ForceToIdle,
+    OnForceFullInventory,
+    //OnReachResource,
+    //OnReachWithResource,
+    //OnGoToMine,
+    //OnEmptyInventory,
+    //OnTired,
+    //OnAlert,
 
     _Count
 }
