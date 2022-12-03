@@ -13,12 +13,16 @@ namespace Diciembre
 
         [SerializeField] private Level mapEditor;
         [SerializeField] private bool showNodes = false;
+
+        [SerializeField] private bool showVoronoid = false;
+
         [SerializeField] private int GuiStyleSize = 10;
         #endregion
 
         #region PUBLIC_FIELD
         public static Node[] mainMap;
         public static Vector2Int MapSize;
+        public bool showSegments;
         #endregion
 
         #region PRIVATE_FIELD
@@ -40,9 +44,9 @@ namespace Diciembre
         {
             if (mainMap == null)
                 return;
-            if (!showNodes)
-                return;
+                
             GUIStyle style = new GUIStyle() { fontSize = GuiStyleSize };
+            if (showNodes)
             foreach (Node node in mainMap)
             {
                 if (node == null)
@@ -56,6 +60,10 @@ namespace Diciembre
 
                 Handles.Label(nodePos-Vector3.one/2f, node.ID.ToString(), style);
             }
+            if(showVoronoid)
+                VoronoiController.DrawSectors();
+            if (showSegments)
+                VoronoiController.DrawSegments();
         }
         #endregion
 

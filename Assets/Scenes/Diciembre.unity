@@ -679,7 +679,9 @@ MonoBehaviour:
   aS: {fileID: 847802426}
   mapEditor: {fileID: 1119106831}
   showNodes: 0
+  showVoronoid: 1
   GuiStyleSize: 10
+  showSegments: 0
 --- !u!4 &430659947
 Transform:
   m_ObjectHideFlags: 0
@@ -787,7 +789,7 @@ GameObject:
   - component: {fileID: 565704782}
   - component: {fileID: 565704781}
   m_Layer: 0
-  m_Name: EventSystem
+  m_Name: ---EventSystem---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1129,7 +1131,7 @@ MonoBehaviour:
     type: 1
   - x: 0
     y: 7
-    type: 1
+    type: -1
   - x: 0
     y: 8
     type: 1
@@ -1177,7 +1179,7 @@ MonoBehaviour:
     type: 1
   - x: 1
     y: 7
-    type: 1
+    type: -1
   - x: 1
     y: 8
     type: 1
@@ -1225,7 +1227,7 @@ MonoBehaviour:
     type: 1
   - x: 2
     y: 7
-    type: 1
+    type: -1
   - x: 2
     y: 8
     type: 1
@@ -1273,7 +1275,7 @@ MonoBehaviour:
     type: 1
   - x: 3
     y: 7
-    type: 1
+    type: -1
   - x: 3
     y: 8
     type: 1
@@ -1321,7 +1323,7 @@ MonoBehaviour:
     type: 1
   - x: 4
     y: 7
-    type: 1
+    type: -1
   - x: 4
     y: 8
     type: 1
@@ -2065,7 +2067,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1593619470}
   m_Layer: 0
-  m_Name: Conteiners
+  m_Name: ---Conteiners---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -5,20 +5,9 @@ namespace Diciembre
 {
     public static class VoronoiController
     {
-    #region EXPOSED_FIELDS
-    [SerializeField] private static bool drawSegments = false;
-    #endregion
-
     #region PRIVATE_FIELDS
     private static List<Limit> limits = null;
     private static List<Sector> sectors = null;
-    #endregion
-
-    #region UNITY_CALLS
-    private static void OnDrawGizmos()
-    {
-        Draw();
-    }
     #endregion
 
     #region PUBLIC_METHODS
@@ -31,7 +20,8 @@ namespace Diciembre
     public static void SetVoronoi(List<Resource> mines)
     {
         sectors.Clear();
-        if (mines.Count == 0) return;
+        if (mines.Count == 0) 
+            return;
 
         for (int i = 0; i < mines.Count; i++)
             sectors.Add(new Sector(mines[i]));
@@ -45,7 +35,8 @@ namespace Diciembre
         {
             for (int j = 0; j < mines.Count; j++)
             {
-                if (i == j) continue;
+                if (i == j) 
+                    continue;
                 sectors[i].AddSegment(mines[i].transform.position, mines[j].transform.position);
             }
         }
@@ -63,32 +54,40 @@ namespace Diciembre
                     return sectors[i].Mine;
         return null;
     }
-    #endregion
-
-    #region PRIVATE_METHODS
-    private static void InitLimits()
-    {
-        limits = new List<Limit>();
-
-        Vector2 offset = new Vector2(Main.MapSize.x, Main.MapSize.y) / 2f;
-
-        limits.Add(new Limit(offset, DIRECTION.LEFT));
-        limits.Add(new Limit(new Vector2(0f, Main.MapSize.y) + offset, DIRECTION.UP));
-        limits.Add(new Limit(new Vector2(Main.MapSize.x, Main.MapSize.y) + offset, DIRECTION.RIGHT));
-        limits.Add(new Limit(new Vector2(Main.MapSize.x, 0f) + offset, DIRECTION.DOWN));
-    }
-
-    private static void Draw()
+        public static void DrawSectors()
     {
         if (sectors == null) return;
 
         for (int i = 0; i < sectors.Count; i++)
         {
             sectors[i].DrawSector();
-            if (drawSegments)
-                sectors[i].DrawSegments();
         }
     }
+        public static void DrawSegments()
+        {
+            if (sectors == null)
+                return;
+            for (int i = 0; i < sectors.Count; i++)
+            {
+                sectors[i].DrawSegments();
+            }
+        }
+
+    #endregion
+
+    #region PRIVATE_METHODS
+        private static void InitLimits()
+        {
+            limits = new List<Limit>();
+
+                Vector2 offset = Vector2.zero;
+
+            limits.Add(new Limit(Vector2.zero + offset, DIRECTION.LEFT));
+            limits.Add(new Limit(new Vector2(0, Main.MapSize.y) + offset, DIRECTION.UP));
+            limits.Add(new Limit(new Vector2(Main.MapSize.x, Main.MapSize.y) + offset, DIRECTION.RIGHT));
+            limits.Add(new Limit(new Vector2(Main.MapSize.x, 0) + offset, DIRECTION.DOWN));
+        }
+
     #endregion
     }
 }

@@ -92,7 +92,15 @@ namespace Diciembre
                 return false;
             if (SamePosAsTown(randPos))
                 return false;
+            if (invalidPosition(randPos))
+                return false;
             return true;
+        }
+        private bool invalidPosition(Vector2Int randpos)
+        {
+            if (randpos.x <= 0 || randpos.y <= 0 || randpos.x == Main.MapSize.x||randpos.y ==Main.MapSize.y)
+                return true;
+            return false;
         }
         private bool invalidIndex(int index)
         {
