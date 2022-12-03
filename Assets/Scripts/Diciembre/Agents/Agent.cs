@@ -13,7 +13,7 @@ namespace Diciembre
         [SerializeField] private TMPro.TextMeshProUGUI headText;
         [ReadOnly][SerializeField] private CentroUrbano home;
         [ReadOnly][SerializeField] private float currentTime;
-        [ReadOnly][SerializeField] private int amountInventory;
+        [SerializeField] private int amountInventory;
 
 
         [ReadOnly][SerializeField] private States currentState;
@@ -126,6 +126,13 @@ namespace Diciembre
                 minerPath.CallPath(speed, transform.position, localmine,
                 () =>
                 {
+                    if (Vector3.Distance (localmine,transform.position)>1) //si es imposible llegar
+                    {
+                        finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
+                        lastFlag = Flags.OnIddle;
+                        resource.DestroyResource();
+                        return;
+                    }
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnStartMine);
                     lastFlag = Flags.OnStartMine;
                     return;
@@ -143,13 +150,16 @@ namespace Diciembre
                     {
                         finiteStateMachine.SetFlag(ref currentState, Flags.OnReachHome);
                         lastFlag = Flags.OnReachHome;
+                        return;
                     }
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
                     lastFlag = Flags.OnIddle;
+                    return;
                 });
         }
         private void DepositingBehaviour()
         {
+            Debug.Log("depo");
             home.gold += amountInventory;
             amountInventory = 0;
             finiteStateMachine.SetFlag(ref currentState, Flags.OnClearInventory);

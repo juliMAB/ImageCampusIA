@@ -26,10 +26,10 @@ namespace Diciembre
                 return 0;
             }
         }
+        public void DestroyResource() =>OnEmpty?.Invoke(this);
         #endregion
 
         #region PRIVATE_METHODS
-        private void DestroyResource() =>OnEmpty?.Invoke(this);
         #endregion
     }
 }

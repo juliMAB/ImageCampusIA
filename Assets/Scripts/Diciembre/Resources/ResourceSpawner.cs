@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq; //para usar Any en list.
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ namespace Diciembre
         [SerializeField] private GameObject resourcePrefab;
         [SerializeField] private CentroUrbano townCenter;
         [SerializeField] private Transform resourceConteiner;
+
+        [SerializeField] private Vector3 SpawnPos;
 
         [SerializeField] private int maxResources;
         #endregion
@@ -44,6 +47,23 @@ namespace Diciembre
             } while (!CanSpawn(index,randPos));
 
             GameObject resourceGO = Instantiate(resourcePrefab, new Vector3(randPos.x,randPos.y), Quaternion.identity, resourceConteiner);
+            Resource agent = resourceGO.GetComponent<Resource>();
+            agent.OnEmpty += DeleteResourceReference;
+            resources.Add(agent);
+        }
+
+        public void SpawnResourceAtPosition()
+        {
+            if (!(maxResources >= resources.Count))
+                return;
+
+            Vector2Int randPos = new Vector2Int((int)SpawnPos.x,(int)SpawnPos.y);
+            int index = 0;
+            index = NodeUtils.PositionToIndex(randPos);
+            if (!CanSpawn(index, randPos))
+                return;
+
+            GameObject resourceGO = Instantiate(resourcePrefab, new Vector3(randPos.x, randPos.y), Quaternion.identity, resourceConteiner);
             Resource agent = resourceGO.GetComponent<Resource>();
             agent.OnEmpty += DeleteResourceReference;
             resources.Add(agent);
@@ -98,5 +118,19 @@ namespace Diciembre
             SpawnResourceButton.onClick.AddListener(SpawnResource);
         }
         #endregion
+    }
+
+    [CustomEditor(typeof(ResourceSpawner))]
+    public class ResourceSpawnerEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            ResourceSpawner level = (ResourceSpawner)target;
+
+                if (GUILayout.Button("SpawnAt"))
+                    level.SpawnResourceAtPosition();
+        }
     }
 }
