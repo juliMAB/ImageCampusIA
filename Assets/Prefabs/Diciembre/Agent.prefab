@@ -96,6 +96,8 @@ GameObject:
   - component: {fileID: 6968282059844181888}
   - component: {fileID: 3191815239253518436}
   - component: {fileID: 6226250479142437312}
+  - component: {fileID: 1372124119747250954}
+  - component: {fileID: 7998288341204917341}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -182,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5572427d60391644cbf2775f6dc95695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentFlocking: {fileID: 1372124119747250954}
   speed: 3
   maxInventory: 2
   headText: {fileID: 8936793255702691183}
@@ -191,6 +194,44 @@ MonoBehaviour:
   currentState: 0
   LastState: 0
   lastFlag: 0
+  FlagAfterAlert: 0
+--- !u!114 &1372124119747250954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4541230720518756953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57868df2aede49942b8db3c326c3797e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 2
+  maxForce: 0.5
+  checkRadious: 1.5
+  separationMultiplayer: 1
+  cohesionMultiplayer: 0
+  aligmentMultiplayer: 0.65
+  velocity: {x: 0, y: 0}
+  aceleration: {x: 0, y: 0}
+  target: {x: 0, y: 0, z: 0}
+--- !u!58 &7998288341204917341
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4541230720518756953}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2
 --- !u!1 &5441478856614622121
 GameObject:
   m_ObjectHideFlags: 0

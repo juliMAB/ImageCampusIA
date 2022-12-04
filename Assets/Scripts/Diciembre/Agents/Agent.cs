@@ -8,6 +8,8 @@ namespace Diciembre
     public class Agent : MonoBehaviour
     {
         #region EXPOSED_FIELDS
+        [SerializeField] private Flocking agentFlocking;
+
         [SerializeField] private float speed;
         [SerializeField] private int maxInventory = 5;
 
@@ -41,7 +43,8 @@ namespace Diciembre
         public void Init(CentroUrbano centroUrbano)
         {
             home = centroUrbano;
-            minerPath = new MineroPath(0.2f,this.transform);
+            minerPath = new MineroPath(0.2f,this.transform,agentFlocking);
+            agentFlocking.SetTarget(transform.position);
             SetFsm();
 
         }
@@ -79,7 +82,7 @@ namespace Diciembre
             finiteStateMachine.AddBehaviour(States.Minig, MiningBehaviour, () => { headText.text = "Mining"; }, () => { });
             finiteStateMachine.AddBehaviour(States.GoingToHome, GoingToHomeBehaviour, () => { headText.text = "GoingToHome"; }, () => { });
             finiteStateMachine.AddBehaviour(States.Depositing, DepositingBehaviour, () => { headText.text = "Depositing"; }, () => { });
-            finiteStateMachine.AddBehaviour(States.AlertInHome, AlertInHomeBehaviour, () => { headText.text = "Depositing"; }, () => { });
+            finiteStateMachine.AddBehaviour(States.AlertInHome, AlertInHomeBehaviour, () => { headText.text = "Alert"; }, () => { });
         }
 
         public void ForceAlert()
@@ -140,14 +143,11 @@ namespace Diciembre
         }
         private void GoingToMineBehaviour()
         {
-            if (!resource)
+            if (resource == null)
             {
-                resource = ResourceSpawner.GetCloserResource(transform.position);
-                if (!resource)
-                {
-                    finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
-                    lastFlag = Flags.OnIddle;
-                }
+                finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
+                lastFlag = Flags.OnIddle;
+                minerPath.firstCall = true;
             }
             else
             {

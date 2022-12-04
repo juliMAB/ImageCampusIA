@@ -3,6 +3,7 @@ using UnityEngine;
 public class MonoBehaviourSingleton<T> : MonoBehaviour where T : Component
 {
     private static T instance;
+    [SerializeField] private bool DestroyOnLoad=false;
     public static T Get()
     {
         return instance;
@@ -13,7 +14,8 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : Component
         if (instance == null)
         {
             instance = this as T;
-            DontDestroyOnLoad(this);
+            if(DestroyOnLoad)
+                DontDestroyOnLoad(this);
         }
         else
         {
