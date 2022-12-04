@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Diciembre
 {
@@ -11,12 +12,13 @@ namespace Diciembre
         #endregion
 
         #region PUBLIC_METHODS
-        public void SpawnAldeano()
+        public Agent SpawnAldeano()
         {
             GameObject agentGO = Instantiate(agentPrefab, townCenter.transform.position, Quaternion.identity, agentConteiner);
             Agent agent = agentGO.GetComponent<Agent>();
             townCenter.AddAgent(agent);
             agent.Init(townCenter);
+            return agent;
         }
         #endregion
     }

@@ -38,7 +38,7 @@ namespace Diciembre
             InitAllMap();
             mapEditor.gameObject.SetActive(false);
             VoronoiController.Init();
-            myUI.Init(() => aS.SpawnAldeano(), () => { rS.SpawnResource(); VoronoiController.SetVoronoi(ResourceSpawner.Resources); });
+            myUI.Init(() => myUI.AddAgentToButton(aS.SpawnAldeano()), () => { rS.SpawnResourceRandom(); VoronoiController.SetVoronoi(ResourceSpawner.Resources); });
         }
         private void OnDrawGizmos()
         {

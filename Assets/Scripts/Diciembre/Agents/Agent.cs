@@ -1,5 +1,6 @@
 using FSM;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Diciembre
 {
@@ -19,6 +20,7 @@ namespace Diciembre
         [ReadOnly][SerializeField] private States currentState;
         [ReadOnly][SerializeField] private States LastState;
         [ReadOnly][SerializeField] private Flags lastFlag;
+        [ReadOnly][SerializeField] private Flags FlagAfterAlert;
         #endregion
 
         #region PRIVATE_FIELDS
@@ -41,6 +43,7 @@ namespace Diciembre
             home = centroUrbano;
             minerPath = new MineroPath(0.2f,this.transform);
             SetFsm();
+
         }
         #endregion
 
@@ -58,11 +61,16 @@ namespace Diciembre
             finiteStateMachine.SetRelation(States.Minig, Flags.OnFullInventory, States.GoingToHome);
             finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnReachHome, States.Depositing);
             finiteStateMachine.SetRelation(States.Depositing, Flags.OnClearInventory, States.Idle);
-            finiteStateMachine.SetRelation(States.Minig, Flags.OnForceFullInventory, States.GoingToHome);
+            finiteStateMachine.SetRelation(States.GoingToHome, Flags.OnReachHouseAlert, States.AlertInHome);
 
             for (int i = 0; i < (int)States._Count; i++)
                 finiteStateMachine.SetRelation((States)i, Flags.OnIddle, States.Idle);
-            
+            for (int i = 0; i < (int)States._Count; i++)
+                finiteStateMachine.SetRelation((States)i, Flags.OnAlert, States.GoingToHome);
+            for (int i = 0; i < (int)States._Count; i++)
+                for (int w = 0; w < (int)Flags._Count; w++)
+                    finiteStateMachine.SetRelation(States.AlertInHome, (Flags)w, (States)i);
+
 
             //------Behaviours------
 
@@ -71,7 +79,30 @@ namespace Diciembre
             finiteStateMachine.AddBehaviour(States.Minig, MiningBehaviour, () => { headText.text = "Mining"; }, () => { });
             finiteStateMachine.AddBehaviour(States.GoingToHome, GoingToHomeBehaviour, () => { headText.text = "GoingToHome"; }, () => { });
             finiteStateMachine.AddBehaviour(States.Depositing, DepositingBehaviour, () => { headText.text = "Depositing"; }, () => { });
+            finiteStateMachine.AddBehaviour(States.AlertInHome, AlertInHomeBehaviour, () => { headText.text = "Depositing"; }, () => { });
         }
+
+        public void ForceAlert()
+        {
+            
+            FlagAfterAlert = lastFlag;
+            finiteStateMachine.SetFlag(ref currentState, Flags.OnAlert);
+            minerPath.firstCall = true;
+            lastFlag = Flags.OnAlert;
+            return;
+        }
+
+        public void ForceBackToWork()
+        {
+            finiteStateMachine.SetFlag(ref currentState, FlagAfterAlert);
+            return;
+        }
+
+        private void AlertInHomeBehaviour()
+        {
+            //holding ForceBackToWork.
+        }
+
         private void MiningBehaviour()
         {
             if (!resource) // lose ref.
@@ -105,13 +136,13 @@ namespace Diciembre
                 return;
             }
             else
-                resource = ResourceSpawner.GetAnyResource();
+                resource = ResourceSpawner.GetCloserResource(transform.position);
         }
         private void GoingToMineBehaviour()
         {
             if (!resource)
             {
-                resource = ResourceSpawner.GetAnyResource();
+                resource = ResourceSpawner.GetCloserResource(transform.position);
                 if (!resource)
                 {
                     finiteStateMachine.SetFlag(ref currentState, Flags.OnIddle);
@@ -145,6 +176,13 @@ namespace Diciembre
             minerPath.CallPath(speed, transform.position, home,
                 () =>
                 {
+                    if (Flags.OnAlert == lastFlag)
+                    {
+                        finiteStateMachine.SetFlag(ref currentState, Flags.OnReachHouseAlert);
+                        lastFlag = Flags.OnReachHouseAlert;
+                        transform.position = home;
+                        return;
+                    }
                     if (amountInventory > 0)
                     {
                         finiteStateMachine.SetFlag(ref currentState, Flags.OnReachHome);

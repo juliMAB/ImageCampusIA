@@ -8,7 +8,7 @@ namespace Diciembre
         #region PRIVATE_FIELDS
         private List<Vector2Int> path = new List<Vector2Int>();
         private float radiusDestination = 0.9f;
-        private bool firstCall = true;
+        public bool firstCall = true;
         private int pathIndex = 1;
         private Transform agentTr;
         #endregion

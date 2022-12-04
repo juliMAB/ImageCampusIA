@@ -13,7 +13,7 @@ public enum States
     Minig,
     GoingToHome,
     Depositing,
-    //Alert,
+    AlertInHome,
 
     _Count
 }
@@ -29,6 +29,8 @@ public enum Flags
     OnReachHome,
     OnClearInventory,
     OnIddle,
+    OnAlert,
+    OnReachHouseAlert,
 
     OnForceFullInventory,
     //OnReachResource,

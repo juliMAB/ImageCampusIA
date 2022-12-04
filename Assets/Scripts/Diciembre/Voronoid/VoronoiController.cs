@@ -37,8 +37,8 @@ namespace Diciembre
             {
                 if (i == j) 
                     continue;
-                sectors[i].AddSegment(mines[i].transform.position, mines[j].transform.position);
-            }
+                sectors[i].AddSegment(mines[i].transform.position, mines[j].transform.position); //on this point if is posible modific this by the weight.
+                }
         }
 
         for (int i = 0; i < sectors.Count; i++)

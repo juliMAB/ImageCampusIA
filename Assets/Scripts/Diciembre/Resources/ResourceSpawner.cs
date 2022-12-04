@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq; //para usar Any en list.
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Diciembre
 {
@@ -20,12 +19,11 @@ namespace Diciembre
 
         #region PRIVATE_FIELDS
         private static List<Resource> resources = new List<Resource>();
-
         #endregion
         public static List<Resource> Resources { get => resources; }
 
         #region PUBLIC_METHODS
-        public void SpawnResource()
+        public void SpawnResourceRandom()
         {
             if (!(maxResources >= resources.Count))
                 return;
@@ -46,10 +44,7 @@ namespace Diciembre
                 index = NodeUtils.PositionToIndex(randPos);
             } while (!CanSpawn(index,randPos));
 
-            GameObject resourceGO = Instantiate(resourcePrefab, new Vector3(randPos.x,randPos.y), Quaternion.identity, resourceConteiner);
-            Resource agent = resourceGO.GetComponent<Resource>();
-            agent.OnEmpty += DeleteResourceReference;
-            resources.Add(agent);
+            SpawnResource(new Vector3(randPos.x, randPos.y));
         }
 
         public void SpawnResourceAtPosition()
@@ -58,15 +53,11 @@ namespace Diciembre
                 return;
 
             Vector2Int randPos = new Vector2Int((int)SpawnPos.x,(int)SpawnPos.y);
-            int index = 0;
-            index = NodeUtils.PositionToIndex(randPos);
+            int index = NodeUtils.PositionToIndex(randPos);
             if (!CanSpawn(index, randPos))
                 return;
 
-            GameObject resourceGO = Instantiate(resourcePrefab, new Vector3(randPos.x, randPos.y), Quaternion.identity, resourceConteiner);
-            Resource agent = resourceGO.GetComponent<Resource>();
-            agent.OnEmpty += DeleteResourceReference;
-            resources.Add(agent);
+            SpawnResource(new Vector3(randPos.x, randPos.y));
         }
         public static Resource GetAnyResource()
         {
@@ -74,13 +65,30 @@ namespace Diciembre
                 return null;
             return resources[Random.Range(0, resources.Count)];
         }
+
+        public static Resource GetCloserResource(Vector3 agentPos)
+        {
+            if (resources.Count == 0)
+                return null;
+            return VoronoiController.GetMineCloser(agentPos);
+
+        }
         #endregion
 
         #region PRIVATE_METHODS
+
+        private void SpawnResource(Vector3 pos)
+        {
+            GameObject resourceGO = Instantiate(resourcePrefab, pos, Quaternion.identity, resourceConteiner);
+            Resource agent = resourceGO.GetComponent<Resource>();
+            agent.OnEmpty += DeleteResourceReference;
+            resources.Add(agent);
+        }
         private void DeleteResourceReference(Resource resource)
         {
             resources.Remove(resource);
             Destroy(resource.gameObject);
+            VoronoiController.SetVoronoi(resources);
         }
         private bool CanSpawn(int index, Vector2Int randPos)
         {
