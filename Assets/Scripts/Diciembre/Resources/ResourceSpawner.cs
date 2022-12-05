@@ -80,9 +80,10 @@ namespace Diciembre
         private void SpawnResource(Vector3 pos)
         {
             GameObject resourceGO = Instantiate(resourcePrefab, pos, Quaternion.identity, resourceConteiner);
-            Resource agent = resourceGO.GetComponent<Resource>();
-            agent.OnEmpty += DeleteResourceReference;
-            resources.Add(agent);
+            Resource resource = resourceGO.GetComponent<Resource>();
+            resource.OnEmpty += DeleteResourceReference;
+            resources.Add(resource);
+            VoronoiController.SetVoronoi(resources);
         }
         private void DeleteResourceReference(Resource resource)
         {

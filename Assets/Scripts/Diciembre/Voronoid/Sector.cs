@@ -17,6 +17,7 @@ namespace Diciembre
 
         #region PROPERTIES
         public Resource Mine { get => mine; }
+        public int weight=0;
         #endregion
 
         #region CONSTRUCTORS
@@ -33,9 +34,19 @@ namespace Diciembre
         #endregion
 
         #region PUBLIC_METHODS
+        public void ResetSegmentAndIntersections()
+        {
+            segments.Clear();
+            intersections.Clear();
+        }
+
         public void AddSegment(Vector2 origin, Vector2 final)
         {
             segments.Add(new Segment(origin, final));
+        }
+        public void AddSegment(Vector2 origin, Vector2 final,float w)
+        {
+            segments.Add(new Segment(origin, final,w));
         }
 
         public void DrawSegments()

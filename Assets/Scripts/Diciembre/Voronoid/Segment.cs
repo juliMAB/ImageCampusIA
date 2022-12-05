@@ -31,6 +31,17 @@ public class Segment
 
         intersections = new List<Vector2>();
     }
+
+    public Segment(Vector2 origin, Vector2 final,float w1)
+    {
+        this.origin = origin;
+        this.final = final;
+
+        mediatrix = new Vector2((origin.x + final.x) * w1, (origin.y + final.y) * w1);
+        direction = Vector2.Perpendicular(new Vector2(final.x - origin.x, final.y - origin.y));
+
+        intersections = new List<Vector2>();
+    }
     #endregion
 
     #region PUBLIC_METHODS

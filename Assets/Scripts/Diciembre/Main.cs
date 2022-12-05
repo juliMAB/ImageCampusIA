@@ -17,6 +17,8 @@ namespace Diciembre
         [SerializeField] private bool showVoronoid = false;
 
         [SerializeField] private int GuiStyleSize = 10;
+
+        [SerializeField] private bool VoronoidWight;
         #endregion
 
         #region PUBLIC_FIELD
@@ -27,9 +29,16 @@ namespace Diciembre
 
         #region PRIVATE_FIELD
         private PathFinding pathfinding;
+
+
         #endregion
 
         #region UNITY_CALLS
+        private void OnValidate()
+        {
+            VoronoiController.useWheight = VoronoidWight;
+        }
+
         private void Start()
         {
             mapEditor.MyStart();
@@ -38,7 +47,7 @@ namespace Diciembre
             InitAllMap();
             mapEditor.gameObject.SetActive(false);
             VoronoiController.Init();
-            myUI.Init(() => myUI.AddAgentToButton(aS.SpawnAldeano()), () => { rS.SpawnResourceRandom(); VoronoiController.SetVoronoi(ResourceSpawner.Resources); });
+            myUI.Init(() => myUI.AddAgentToButton(aS.SpawnAldeano()), () => { rS.SpawnResourceRandom(); });
         }
         private void OnDrawGizmos()
         {
